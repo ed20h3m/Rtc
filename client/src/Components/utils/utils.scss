@@ -1,0 +1,118 @@
+@import "../../colours";
+
+.container {
+  width: 100%;
+  z-index: 15;
+  // padding: 5px;
+  min-height: 100px;
+  height: auto;
+  margin: 1rem auto 0 auto;
+}
+.container-fixed {
+  z-index: 15;
+  min-height: 100px;
+  height: auto;
+}
+.center-div-ver {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  z-index: 15;
+  min-height: 100px;
+  height: auto;
+}
+.center-div-abs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.vertical-div {
+  flex-direction: column;
+}
+.width100 {
+  width: 100%;
+}
+.pt-2rem {
+  padding-top: 2rem;
+}
+.p-1rem {
+  padding: 1rem;
+}
+.bg-blue {
+  background-color: $color-blue;
+}
+.bg-red {
+  $background-color: $color-red;
+}
+.bg-green {
+  $background-color: $color-green;
+}
+.mgb-1rem {
+  margin-bottom: 10px;
+}
+.alerts {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+  width: 99%;
+  display: flex;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  z-index: 15;
+  padding: 5px 0;
+  min-height: 100px;
+  height: auto;
+  margin: 1rem auto 0 auto;
+  flex-direction: column;
+  div {
+    margin-bottom: 10px;
+    display: flex;
+    height: 60px;
+    min-width: 670px;
+    background-color: $color-blue;
+    border-left: 4px solid darken($focus-color, 20);
+    display: flex;
+    border-radius: 2px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    color: #fff !important;
+    // z-index: 100;
+    h2 {
+      font-weight: 100;
+      font-size: 1.2rem;
+    }
+  }
+  div:last-child {
+    margin-bottom: 0;
+  }
+  &:hover {
+    z-index: 0;
+  }
+}
+@media screen and (max-width: 700px) {
+  .info {
+    width: 95% !important;
+  }
+  .alerts {
+    margin: 0 auto;
+    position: absolute;
+    width: 99%;
+    div {
+      min-width: 0;
+      width: 97%;
+      h2 {
+        font-size: 1rem;
+      }
+    }
+  }
+  .container {
+    height: 100%;
+  }
+  .center-div-ver {
+    height: 100%;
+  }
+}

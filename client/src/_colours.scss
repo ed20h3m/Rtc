@@ -1,0 +1,15 @@
+$primary-color-light: #888;
+$secondary-color-light: #111;
+$text-color: #ccc;
+$primary-color-dark: #111;
+$secondary-color-dark: #444;
+$dark-border-color: #8c8a8a;
+$color-blue: rgb(11, 102, 206);
+$color-red: rgb(228, 64, 64);
+$color-green: rgb(42, 169, 73);
+$focus-color: #fff;
+$border-dark: 2px solid $dark-border-color;
+$border-dark2: 2px solid $primary-color-dark;
+$border-dark-focus: 2px solid $text-color;
+$shadow-dark: 5px 5px 20px #333, -5px -5px 20px #333;
+$shadow-dark2: 5px 5px 20px #000, -5px -5px 20px #000;

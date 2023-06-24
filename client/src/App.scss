@@ -1,0 +1,17 @@
+@import "_colours";
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+  font-family: "Instrument Sans" !important;
+  font-weight: 200;
+}
+body {
+  color: $text-color;
+  height: 100vh;
+  background-color: $primary-color-dark;
+}
+#root {
+  height: 100%;
+}

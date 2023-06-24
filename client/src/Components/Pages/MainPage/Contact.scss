@@ -1,0 +1,41 @@
+@import "../../../colours";
+.contact {
+  height: 80px;
+  width: 100%;
+  border-bottom: $border-dark;
+  display: flex;
+  padding: 0 1rem;
+  align-items: center;
+  justify-content: space-between;
+  transition: 0.2s all;
+  .left {
+    display: flex;
+    align-items: center;
+    img {
+      margin-right: 1rem;
+    }
+  }
+  .right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20px;
+    width: 20px;
+    padding: 1rem;
+    background-color: $color-blue;
+    border-radius: 50%;
+    p {
+      font-size: 1.3rem;
+    }
+  }
+
+  cursor: pointer;
+  img {
+    height: 55px;
+    width: 55px;
+    border-radius: 50%;
+    border: $border-dark;
+    outline: none;
+    object-fit: cover;
+  }
+}

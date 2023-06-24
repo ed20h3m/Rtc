@@ -1,0 +1,22 @@
+.def-container {
+  height: 100%;
+  width: 100%;
+  margin: auto;
+  padding: 1rem;
+  max-width: 1900px;
+}
+
+.center-div-vertically {
+  margin: auto;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.center-div-abs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}/*# sourceMappingURL=utils.css.map */
