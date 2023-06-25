@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useReducer } from "react";
 import { AlertContext } from "../Alert/Alert";
-import { ChatContext } from "../Chat/ChatState";
 import EventReducer from "./EventReducer";
 import {
   SET_CONNECTED_USERS,
@@ -20,7 +19,7 @@ export const SocketState = (props) => {
   };
   const [state, dispatch] = useReducer(EventReducer, initialState);
   // Import alert context
-  const { SetAlert } = useContext(AlertContext);
+  // const { SetAlert } = useContext(AlertContext);
   // Create socket
 
   let copy = [];
@@ -60,7 +59,7 @@ export const SocketState = (props) => {
       copy = copy.filter((user) => user.userID !== id);
     });
     socket.on("private message", ({ content, from }) => {
-      const user = document.getElementsByClassName("selected-contact")[0];
+      const user = document.getElementsByClassName("selected-name")[0];
       const messages = document.getElementsByClassName("messages")[0];
       if (user && messages) {
         if (user.innerText === from.username) {

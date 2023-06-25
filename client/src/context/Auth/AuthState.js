@@ -2,15 +2,19 @@ import { createContext, useReducer, useContext } from "react";
 import axios from "axios";
 import AuthReducer from "./AuthReducer";
 import { AlertContext } from "../Alert/Alert";
+import { useNavigate } from "react-router-dom";
 
 // import types
 import { SET_USER } from "../types";
 
 // import schemas
 import { UserLoginSchema } from "../Schemas/User";
+import { SocketContext } from "../Handler/EventHandler";
+import { ChatContext } from "../Chat/ChatState";
 
 // Create auth context
 export const AuthContext = createContext();
+
 export const AuthState = (props) => {
   // Create initial state
   const initialState = {
@@ -21,6 +25,10 @@ export const AuthState = (props) => {
 
   // import Alert context
   const { SetAlert, ToggleLoading } = useContext(AlertContext);
+  const { ConnectSocket, connect } = useContext(SocketContext);
+  const { GetFriends, SetShowChats } = useContext(ChatContext);
+
+  const nav = useNavigate();
 
   // user login
   const Login = async (User = null) => {
@@ -42,10 +50,11 @@ export const AuthState = (props) => {
       if (res.data.Token) {
         localStorage.setItem("username", User.EmailUsername);
         // redirect to chats page
-        window.location.href = "/chats";
+        nav("/chats");
       }
     } catch ({ response }) {
       SetAlert(response.data.message);
+      // console.log(error);
     }
     ToggleLoading(false);
   };
@@ -69,7 +78,7 @@ export const AuthState = (props) => {
     // Remove token from local storage
     localStorage.removeItem("token");
     // redirect to login page
-    window.location.href = "/";
+    nav("/");
   };
 
   return (

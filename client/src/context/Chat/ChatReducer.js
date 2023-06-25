@@ -1,4 +1,9 @@
-import { SET_FRIENDS, SELECT_CHAT, IS_CHAT_SELECTED } from "../types";
+import {
+  SET_FRIENDS,
+  SELECT_CHAT,
+  IS_CHAT_SELECTED,
+  SHOW_CHATS,
+} from "../types";
 const AlertReducer = (state, action) => {
   switch (action.type) {
     default:
@@ -19,6 +24,12 @@ const AlertReducer = (state, action) => {
       return {
         ...state,
         SelectedChat: action.payload,
+      };
+    }
+    case SHOW_CHATS: {
+      return {
+        ...state,
+        ShowChats: action.payload,
       };
     }
   }

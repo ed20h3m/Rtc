@@ -3,16 +3,17 @@ import { ChatContext } from "../../../context/Chat/ChatState";
 import "./Contact.scss";
 
 const Contact = ({ contact, id }) => {
-  const { SetSelectChat, SelectChat } = useContext(ChatContext);
+  const { SetSelectChat, SelectChat, ShowChats, SetShowChats } =
+    useContext(ChatContext);
 
   const Focus = (id, chat) => {
     SetSelectChat(true);
     SelectChat(chat);
     if (window.innerWidth <= 700) {
+      SetShowChats(false);
       const contact = document.getElementsByClassName("chats")[0];
       contact.style.display = "none";
     }
-    else{}
     const contact = document.getElementById(id);
     for (let i = 0; i < contact.parentElement.children.length; i++) {
       contact.parentElement.children[i].classList.remove("selected-contact");
@@ -20,8 +21,10 @@ const Contact = ({ contact, id }) => {
         contact.parentElement.children[i].style.backgroundColor = "#222";
       }
     }
-    contact.classList.add("selected-contact");
-    contact.style.backgroundColor = "#000";
+    if (ShowChats) {
+      contact.classList.add("selected-contact");
+      contact.style.backgroundColor = "#000";
+    }
   };
   return (
     <div className="contact" id={id} onClick={() => Focus(id, contact)}>

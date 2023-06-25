@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { ChatContext } from "../../../context/Chat/ChatState";
 import { SocketContext } from "../../../context/Handler/EventHandler";
 import CloseIcon from "@mui/icons-material/Close";
@@ -6,10 +6,14 @@ import "./Message.scss";
 
 const Message = () => {
   const [state, setState] = useState("");
-  const { SelectedChat, SetSelectChat } = useContext(ChatContext);
+  const {
+    SelectedChat,
+    SetSelectChat,
+    IsChatSelected,
+    ShowChats,
+    SetShowChats,
+  } = useContext(ChatContext);
   const { sendMessage } = useContext(SocketContext);
-
-  const hi = useRef(null);
 
   useEffect(() => {
     const messages = document.getElementsByClassName("messages")[0];
@@ -52,18 +56,23 @@ const Message = () => {
   const onChange = (e) => setState(e.target.value);
 
   const cancel = () => {
-    const chats = document.getElementById("chats-");
-    for (let i = 0; i < chats.children.length; i++) {
-      if (chats.children[i].style.backgroundColor !== "#222") {
-        chats.children[i].style.backgroundColor = "#222";
+    SetShowChats(true);
+    if (ShowChats) {
+      const chats = document.getElementById("chats-");
+      for (let i = 0; i < chats.children.length; i++) {
+        if (chats.children[i].style.backgroundColor !== "#222") {
+          chats.children[i].style.backgroundColor = "#222";
+        }
+        const contact = document.getElementsByClassName("chats")[0];
+        if (contact.style.display === "none") contact.style.display = "block";
       }
-      const contact = document.getElementsByClassName("chats")[0];
-      if (contact.style.display === "none") contact.style.display = "block";
+      const selectedChat =
+        document.getElementsByClassName("selected-contact")[0];
+      if (selectedChat) selectedChat.classList.remove("selected-contact");
     }
-    const selectedChat = document.getElementsByClassName("selected-contact")[0];
-    selectedChat.classList.remove("selected-contact");
     SetSelectChat(false);
   };
+
   return (
     <div className="message">
       <header>
@@ -72,7 +81,7 @@ const Message = () => {
             src="https://cdn.dribbble.com/users/361185/screenshots/3803404/media/1d9cbaab0e2aacf008c6b6524662183a.png?compress=1&resize=400x300&vertical=top"
             alt=""
           />
-          <h2>{SelectedChat.username}</h2>
+          <h2 className="selected-name">{SelectedChat.username}</h2>
         </div>
         <div className="right-header">
           <CloseIcon className="bg" onClick={cancel} />

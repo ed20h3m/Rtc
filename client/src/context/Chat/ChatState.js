@@ -4,7 +4,12 @@ import { AlertContext } from "../Alert/Alert";
 import ChatReducer from "../Chat/ChatReducer";
 
 // import types
-import { SET_FRIENDS, SELECT_CHAT, IS_CHAT_SELECTED } from "../types";
+import {
+  SET_FRIENDS,
+  SELECT_CHAT,
+  IS_CHAT_SELECTED,
+  SHOW_CHATS,
+} from "../types";
 
 // Create auth context
 export const ChatContext = createContext();
@@ -14,9 +19,8 @@ export const ChatState = (props) => {
     IsChatSelected: false,
     SelectedChat: {},
     chats: [],
+    ShowChats: true,
   };
-
-  let opt = false;
   const [state, dispatch] = useReducer(ChatReducer, initialState);
 
   // import Alert context
@@ -39,6 +43,7 @@ export const ChatState = (props) => {
     } catch ({ response }) {
       // alert if there is an error
       SetAlert(response.data.message);
+      // console.log(error);
     }
     ToggleLoading(false);
   };
@@ -52,7 +57,11 @@ export const ChatState = (props) => {
   // set selected chat
   const SetSelectChat = (option) => {
     dispatch({ type: IS_CHAT_SELECTED, payload: option });
-    opt = option;
+  };
+
+  // set visibility of chats
+  const SetShowChats = (option) => {
+    dispatch({ type: SHOW_CHATS, payload: option });
   };
 
   return (
@@ -61,6 +70,8 @@ export const ChatState = (props) => {
         GetFriends,
         SelectChat,
         SetSelectChat,
+        SetShowChats,
+        ShowChats: state.ShowChats,
         chats: state.chats,
         SelectedChat: state.SelectedChat,
         IsChatSelected: state.IsChatSelected,

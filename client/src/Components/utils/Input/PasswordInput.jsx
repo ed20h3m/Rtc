@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import "../../utils/utils.scss";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
@@ -8,8 +8,6 @@ import "./Input.scss";
 
 const Input = ({ placeholder = "", showFilter = false, name, onChange }) => {
   const [isShow, setShow] = useState(false);
-  const [Password, setPassword] = useState("");
-
   const [cond1, setcond1] = useState(false);
   const [cond2, setcond2] = useState(false);
   const [cond3, setcond3] = useState(false);
@@ -17,7 +15,7 @@ const Input = ({ placeholder = "", showFilter = false, name, onChange }) => {
     onChange(e);
     let counter = 0;
     const progressBar = document.getElementsByClassName("progress-bar");
-    var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    var format = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
     var format2 = /[A-Z]+/;
     if (showFilter) {
       if (e.target.value !== "") {

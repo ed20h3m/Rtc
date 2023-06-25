@@ -10,17 +10,26 @@ import Loading from "../../utils/Loading";
 
 const Chats = () => {
   const { LogOut } = useContext(AuthContext);
-  const { GetFriends } = useContext(ChatContext);
   const { isLoading } = useContext(AlertContext);
-  const { ConnectSocket, connect, ConnectedUsers } = useContext(SocketContext);
+  const { ConnectedUsers } = useContext(SocketContext);
+  const { IsChatSelected, SelectedChat } = useContext(ChatContext);
+
   useEffect(() => {
-    GetFriends();
-    connect();
-    ConnectSocket(localStorage.getItem("username"));
+    if (IsChatSelected && window.innerWidth > 700) {
+      const chatList = document.getElementById("chats-");
+      for (let i = 0; i < chatList.children.length; i++) {
+        // console.log(chatList.children[i].innerText);
+        if (chatList.children[i].innerText === SelectedChat.username) {
+          chatList.children[i].classList.add("selected-contact");
+          chatList.children[i].style.backgroundColor = "#000";
+          break;
+        }
+      }
+    }
     // eslint-disable-next-line
   }, []);
-
   const onClick = () => LogOut();
+
   return (
     <div className="chats">
       <header>
