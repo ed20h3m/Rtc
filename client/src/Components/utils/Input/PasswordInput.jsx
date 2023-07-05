@@ -30,14 +30,15 @@ const Input = ({ placeholder = "", showFilter = false, name, onChange }) => {
         } else setcond2(false);
 
         if (format2.test(e.target.value)) {
-          counter++;
+          if (e.target.value.length > 8) {
+            counter++;
+          }
           setcond3(true);
         } else setcond3(false);
-
         if (counter === 0)
           progressBar[0].style.backgroundColor = "rgb(228, 64, 64)";
-        else if (counter === 1) progressBar[0].style.backgroundColor = "orange";
-        else if (counter === 2) progressBar[0].style.backgroundColor = "orange";
+        // else if (counter === 1) progressBar[0].style.backgroundColor = "orange";
+        else if (counter <= 2) progressBar[0].style.backgroundColor = "orange";
         else if (counter === 3)
           progressBar[0].style.backgroundColor = "rgb(52, 217, 96)";
         progressBar[0].style.width = 10 + counter * 30 + "%";

@@ -8,7 +8,6 @@ const Contact = ({ contact, id }) => {
 
   const Focus = (id, chat) => {
     SetSelectChat(true);
-    SelectChat(chat);
     if (window.innerWidth <= 700) {
       SetShowChats(false);
       const contact = document.getElementsByClassName("chats")[0];
@@ -25,6 +24,7 @@ const Contact = ({ contact, id }) => {
       contact.classList.add("selected-contact");
       contact.style.backgroundColor = "#000";
     }
+    SelectChat(chat);
   };
   return (
     <div className="contact" id={id} onClick={() => Focus(id, contact)}>
@@ -33,7 +33,14 @@ const Contact = ({ contact, id }) => {
           src="https://cdn.dribbble.com/users/361185/screenshots/3803404/media/1d9cbaab0e2aacf008c6b6524662183a.png?compress=1&resize=400x300&vertical=top"
           alt=""
         />
-        <h3>{contact.username}</h3>
+        <div className="mid">
+          <h3>{contact.username}</h3>
+          {contact.connected ? (
+            <div className="con"></div>
+          ) : (
+            <div className="dis"></div>
+          )}
+        </div>
       </div>
       {contact.newMessageCounter !== 0 && (
         <div className="right">

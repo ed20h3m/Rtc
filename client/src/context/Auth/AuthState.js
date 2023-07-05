@@ -8,9 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { SET_USER } from "../types";
 
 // import schemas
-import { UserLoginSchema } from "../Schemas/User";
-import { SocketContext } from "../Handler/EventHandler";
-import { ChatContext } from "../Chat/ChatState";
+import { UserLoginSchema, UserSchema } from "../Schemas/User";
 
 // Create auth context
 export const AuthContext = createContext();
@@ -22,12 +20,8 @@ export const AuthState = (props) => {
   };
   // create empty state
   const [state, dispatch] = useReducer(AuthReducer, initialState);
-
   // import Alert context
   const { SetAlert, ToggleLoading } = useContext(AlertContext);
-  const { ConnectSocket, connect } = useContext(SocketContext);
-  const { GetFriends, SetShowChats } = useContext(ChatContext);
-
   const nav = useNavigate();
 
   // user login
@@ -58,10 +52,10 @@ export const AuthState = (props) => {
     }
     ToggleLoading(false);
   };
-
   // get user details
   const GetUser = async () => {
-    ToggleLoading(true);
+    // ToggleLoading(true);
+    axios.defaults.headers.common["token"] = localStorage.token;
     // Make request to backend
     const res = await axios.get("/user");
     // store user details
@@ -71,14 +65,37 @@ export const AuthState = (props) => {
       // show alert if there is error
       SetAlert(response.data.message);
     }
+    // ToggleLoading(false);
   };
-
   // user log out
   const LogOut = () => {
     // Remove token from local storage
-    localStorage.removeItem("token");
+    localStorage.clear();
+    // localStorage.removeItem("token");
     // redirect to login page
     nav("/");
+    window.location.reload();
+  };
+
+  const SignUp = async (User) => {
+    // Check if user object is != null
+    if (!User) return SetAlert("No Information Found");
+
+    // Add verified attribute
+    User.Verified = false;
+
+    // Validate syntax before backend request
+    const { error } = UserSchema.validate(User);
+    if (error) return SetAlert(error.details[0].message.replace(/"/g, ""));
+
+    try {
+      ToggleLoading(true);
+      const res = await axios.post("/user", { User });
+      SetAlert(res.data.message);
+    } catch ({ response }) {
+      SetAlert(response.data.message);
+    }
+    ToggleLoading(false);
   };
 
   return (
@@ -87,6 +104,7 @@ export const AuthState = (props) => {
         Login,
         GetUser,
         LogOut,
+        SignUp,
         user: state.user,
       }}
     >

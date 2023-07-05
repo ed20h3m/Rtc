@@ -9,7 +9,9 @@ import {
   SELECT_CHAT,
   IS_CHAT_SELECTED,
   SHOW_CHATS,
+  SET_SEARCH,
 } from "../types";
+import { SocketContext } from "../Handler/EventHandler";
 
 // Create auth context
 export const ChatContext = createContext();
@@ -20,13 +22,24 @@ export const ChatState = (props) => {
     SelectedChat: {},
     chats: [],
     ShowChats: true,
+    SearchFriends: [],
   };
   const [state, dispatch] = useReducer(ChatReducer, initialState);
 
   // import Alert context
-  const { SetAlert, ToggleLoading } = useContext(AlertContext);
+  const {
+    SetAlert,
+    ToggleLoading,
+    ToggleMessagesLoading,
+    ToggleSettingsLoading,
+    ToggleSearchLoading,
+    ToggleReqLoading,
+  } = useContext(AlertContext);
 
+  const { AddUser, RemoveUser, NotifyFriendRequest } =
+    useContext(SocketContext);
   // get all friends from database
+
   const GetFriends = async () => {
     try {
       // Set loading: true
@@ -36,7 +49,7 @@ export const ChatState = (props) => {
       axios.defaults.headers.common["token"] = localStorage.token;
 
       // make request to backend
-      const res = await axios.get("user/friends");
+      const res = await axios.get("/user/friends");
 
       // store friends into context
       dispatch({ type: SET_FRIENDS, payload: res.data.Friends });
@@ -47,34 +60,178 @@ export const ChatState = (props) => {
     }
     ToggleLoading(false);
   };
-
   // select chat
-  const SelectChat = (chat) => {
+  const SelectChat = async (chat) => {
     chat.newMessageCounter = 0;
+    try {
+      ToggleMessagesLoading(true);
+      const res = await axios.post("/convos", {
+        Users: [localStorage.getItem("username"), chat.username],
+      });
+      await ResetCounter(chat.username);
+      chat.messages = res.data.convos;
+    } catch ({ response }) {
+      SetAlert(response.data.message);
+    }
+
+    ToggleMessagesLoading(false);
     dispatch({ type: SELECT_CHAT, payload: chat });
   };
-
   // set selected chat
   const SetSelectChat = (option) => {
     dispatch({ type: IS_CHAT_SELECTED, payload: option });
   };
-
   // set visibility of chats
   const SetShowChats = (option) => {
     dispatch({ type: SHOW_CHATS, payload: option });
+  };
+  // set visibility of chats
+  const ResetCounter = async (To) => {
+    try {
+      await axios.put("/convos", {
+        To,
+        From: localStorage.getItem("username"),
+      });
+    } catch ({ response }) {
+      SetAlert(response.data.message);
+    }
+  };
+  // Clear Conversation
+  const ClearConvo = async (Username) => {
+    try {
+      ToggleSettingsLoading(true);
+      const res = await axios.put("/convos/clear-convo", {
+        Username,
+        Me: localStorage.getItem("username"),
+      });
+      SetAlert(res.data.message);
+    } catch ({ response }) {
+      SetAlert(response.data.message);
+    }
+    state.SelectedChat.messages = [];
+    dispatch({ type: SELECT_CHAT, payload: state.SelectedChat });
+    ToggleSettingsLoading(false);
+  };
+  // Remove Friend in settings
+  const RemoveFriendSettings = async () => {
+    ToggleSettingsLoading(true);
+    await RemoveFriend(state.SelectedChat.username);
+    ToggleSettingsLoading(false);
+  };
+  // Remove Friend in search
+  const RemoveFriendSearch = async (Username) => {
+    ToggleReqLoading(true);
+    await RemoveFriend(Username);
+    ToggleReqLoading(false);
+  };
+  // Remove Friend
+  const RemoveFriend = async (Username) => {
+    try {
+      // set token to headers
+      axios.defaults.headers.common["token"] = localStorage.token;
+      const res = await axios.put("/user/friends/delete", {
+        User: { Username },
+      });
+      // console.log(res.data.message);
+      SetAlert(res.data.message);
+    } catch ({ response }) {
+      SetAlert(response.data.message);
+    }
+    SetSelectChat(false);
+    RemoveUser(Username);
+  };
+  // Search Friends
+  const Search = async (username) => {
+    try {
+      if (username === "") return dispatch({ type: SET_SEARCH, payload: [] });
+
+      axios.defaults.headers.common["token"] = localStorage.token;
+      ToggleSearchLoading(true);
+      const res = await axios.post("/user/friends/search", {
+        Username: username,
+      });
+      dispatch({ type: SET_SEARCH, payload: res.data.Users });
+    } catch ({ response }) {
+      SetAlert(response.data.message);
+    }
+    ToggleSearchLoading(false);
+  };
+  // Send friend request
+  const SendFriendRequest = async (username) => {
+    try {
+      ToggleReqLoading(true);
+      axios.defaults.headers.common["token"] = localStorage.token;
+      const res = await axios.post("/user/friends", {
+        User: { Username: username },
+      });
+      SetAlert(res.data.message);
+    } catch ({ response }) {
+      SetAlert(response.data.message);
+    }
+    ToggleReqLoading(false);
+  };
+  //Cancel Request
+  const CancelRequest = async (username) => {
+    try {
+      ToggleReqLoading(true);
+      axios.defaults.headers.common["token"] = localStorage.token;
+      const res = await axios.put("/user/friends/cancel", {
+        User: { Username: username, Request: false, Cancel: true },
+      });
+      SetAlert(res.data.message);
+    } catch ({ response }) {
+      SetAlert(response.data.message);
+    }
+    ToggleReqLoading(false);
+  };
+  // Accept / Reject Request
+  const HandleRequest = async (User) => {
+    try {
+      ToggleReqLoading(true);
+      axios.defaults.headers.common["token"] = localStorage.token;
+      const res = await axios.put("/user/friends", User);
+      SetAlert(res.data.message);
+    } catch ({ response }) {
+      // alerts user if error
+      SetAlert(response.data.message);
+    }
+    ToggleReqLoading(false);
+    if (User.User.Request) {
+      await GetSession(User.User.Username);
+    }
+  };
+  // Get user Session
+  const GetSession = async (Username) => {
+    try {
+      axios.defaults.headers.common["token"] = localStorage.token;
+      const res = await axios.post("/sessions", { Username });
+      AddUser(res.data.Session);
+      NotifyFriendRequest(res.data.Session);
+    } catch ({ response }) {
+      SetAlert(response.data.message);
+    }
   };
 
   return (
     <ChatContext.Provider
       value={{
+        ResetCounter,
         GetFriends,
         SelectChat,
         SetSelectChat,
         SetShowChats,
+        ClearConvo,
+        RemoveFriendSearch,
+        RemoveFriendSettings,
+        Search,
+        SendFriendRequest,
+        CancelRequest,
+        HandleRequest,
         ShowChats: state.ShowChats,
         chats: state.chats,
         SelectedChat: state.SelectedChat,
         IsChatSelected: state.IsChatSelected,
+        SearchFriends: state.SearchFriends,
       }}
     >
       {props.children}

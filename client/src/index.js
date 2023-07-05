@@ -13,14 +13,14 @@ root.render(
   // <React.StrictMode>
   <BrowserRouter>
     <AlertState>
-      <ChatState>
-        <SocketState>
+      <SocketState>
+        <ChatState>
           <AuthState>
             <App />
           </AuthState>
-        </SocketState>
-      </ChatState>
+        </ChatState>
+      </SocketState>
     </AlertState>
   </BrowserRouter>
-  /* </React.StrictMode> */
+  // </React.StrictMode>
 );

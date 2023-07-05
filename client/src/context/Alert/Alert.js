@@ -1,5 +1,16 @@
 import { createContext, useReducer } from "react";
-import { SET_ALERT, REMOVE_ALERT, TOGGLE_LOADING } from "../types";
+import {
+  SET_ALERT,
+  REMOVE_ALERT,
+  TOGGLE_LOADING,
+  TOGGLE_MESSAGES_LOADING,
+  SHOW_CHAT_SETTINGS,
+  SHOW_OVERLAY,
+  TOGGLE_SETTINGS_LOADING,
+  TOGGLE_PROFILE,
+  SET_SEARCH_LOADING,
+  SET_REQ_LOADING,
+} from "../types";
 import { v4 as uuid } from "uuid";
 export const AlertContext = createContext();
 
@@ -28,6 +39,48 @@ const AlertReducer = (state, action) => {
         isLoading: action.payload,
       };
     }
+    case TOGGLE_MESSAGES_LOADING: {
+      return {
+        ...state,
+        MessagesLoading: action.payload,
+      };
+    }
+    case SET_REQ_LOADING: {
+      return {
+        ...state,
+        RequestLoading: action.payload,
+      };
+    }
+    case SHOW_CHAT_SETTINGS: {
+      return {
+        ...state,
+        ShowChatSettings: action.payload,
+      };
+    }
+    case SHOW_OVERLAY: {
+      return {
+        ...state,
+        ShowOverlay: action.payload,
+      };
+    }
+    case TOGGLE_PROFILE: {
+      return {
+        ...state,
+        ShowProfile: action.payload,
+      };
+    }
+    case SET_SEARCH_LOADING: {
+      return {
+        ...state,
+        SearchLoading: action.payload,
+      };
+    }
+    case TOGGLE_SETTINGS_LOADING: {
+      return {
+        ...state,
+        isSettingsLoading: action.payload,
+      };
+    }
     case REMOVE_ALERT: {
       return {
         ...state,
@@ -42,6 +95,13 @@ export const AlertState = (props) => {
   const initialState = {
     Alerts: [],
     isLoading: false,
+    isSettingsLoading: false,
+    MessagesLoading: false,
+    ShowChatSettings: false,
+    ShowOverlay: false,
+    ShowProfile: false,
+    SearchLoading: false,
+    RequestLoading: false,
   };
 
   // create a reducer and a state
@@ -58,10 +118,55 @@ export const AlertState = (props) => {
       payload: id,
     });
   };
+  const ToggleSettingsLoading = (load) => {
+    dispatch({
+      type: TOGGLE_SETTINGS_LOADING,
+      payload: load,
+    });
+  };
   const ToggleLoading = (load) => {
     dispatch({
       type: TOGGLE_LOADING,
       payload: load,
+    });
+  };
+  const ToggleMessagesLoading = (option) => {
+    dispatch({
+      type: TOGGLE_MESSAGES_LOADING,
+      payload: option,
+    });
+  };
+  const ToggleChatSettings = (option) => {
+    dispatch({
+      type: SHOW_CHAT_SETTINGS,
+      payload: option,
+    });
+  };
+  const ToggleProfile = (option) => {
+    dispatch({
+      type: TOGGLE_PROFILE,
+      payload: option,
+    });
+  };
+  const ToggleOverlay = (option) => {
+    dispatch({
+      type: SHOW_OVERLAY,
+      payload: option,
+    });
+    if (!option) {
+      ToggleChatSettings(false);
+    }
+  };
+  const ToggleSearchLoading = (option) => {
+    dispatch({
+      type: SET_SEARCH_LOADING,
+      payload: option,
+    });
+  };
+  const ToggleReqLoading = (option) => {
+    dispatch({
+      type: SET_REQ_LOADING,
+      payload: option,
     });
   };
   return (
@@ -69,8 +174,21 @@ export const AlertState = (props) => {
       value={{
         SetAlert,
         ToggleLoading,
+        ToggleMessagesLoading,
+        ToggleChatSettings,
+        ToggleOverlay,
+        ToggleSettingsLoading,
+        ToggleProfile,
+        ToggleSearchLoading,
+        ToggleReqLoading,
         Alerts: state.Alerts,
         isLoading: state.isLoading,
+        MessagesLoading: state.MessagesLoading,
+        ShowChatSettings: state.ShowChatSettings,
+        ShowOverlay: state.ShowOverlay,
+        isSettingsLoading: state.isSettingsLoading,
+        SearchLoading: state.SearchLoading,
+        RequestLoading: state.RequestLoading,
       }}
     >
       {props.children}

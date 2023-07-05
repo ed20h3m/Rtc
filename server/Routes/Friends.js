@@ -4,6 +4,8 @@ const Router = express.Router();
 
 // Import Models
 const UserModel = require("../Models/User");
+const ConvoModel = require("../Models/Convo");
+const SessionModel = require("../Models/Session");
 
 // Import Authentication middleware
 const UserAuthentication = require("../Middleware/UserAuthentication");
@@ -117,17 +119,18 @@ Router.put("/", UserAuthentication, async (req, res) => {
 
   // Destruct User from request body
   const { User } = req.body;
+  // console.log(User);
   // Validate syntax and check user object exists
   const err = Validate(req.body, RequestSchema);
   if (err.type === Error)
     return res.status(err.code).json({ message: err.message, type: err.type });
-
   // Convert username to lower case
   User.Username = User.Username.toLowerCase();
 
   // Check if the user exists based on username
   const user = await UserModel.findOne({ Username: User.Username })
     .select("_id")
+    .select("Username")
     .select("Requested_Friends");
 
   // Return error if user does not exist
@@ -139,15 +142,26 @@ Router.put("/", UserAuthentication, async (req, res) => {
   try {
     // SENDER - ACCEPTING OR REJECTING
     req.User.Requested_Friends.forEach((friend) => {
-      if (friend.id === user._id.toString() && !friend.DidYouSend) {
-        IsUser2FoundFriend = true;
-        return;
+      if (req.User.Cancel) {
+        if (friend.id === user._id.toString() && friend.DidYouSend) {
+          IsUser2FoundFriend = true;
+          return;
+        }
+      } else {
+        if (friend.id === user._id.toString() && !friend.DidYouSend) {
+          IsUser2FoundFriend = true;
+          return;
+        }
       }
     });
 
     // RECIPIENT
     user.Requested_Friends.forEach((friend) => {
-      if (friend.id === req.id && friend.DidYouSend) IsUser1Request = true;
+      if (req.User.Cancel) {
+        if (friend.id === req.id && !friend.DidYouSend) IsUser1Request = true;
+      } else {
+        if (friend.id === req.id && friend.DidYouSend) IsUser1Request = true;
+      }
     });
 
     // Return error message if match not found
@@ -161,7 +175,7 @@ Router.put("/", UserAuthentication, async (req, res) => {
             Requested_Friends: { id: user._id.toString(), DidYouSend: false },
           },
           $push: {
-            Friends: { id: user._id.toString() },
+            Friends: { id: user._id.toString(), Username: User.Username },
           },
         }
       : {
@@ -175,7 +189,7 @@ Router.put("/", UserAuthentication, async (req, res) => {
             Requested_Friends: { id: req.id.toString() },
           },
           $push: {
-            Friends: { id: req.id.toString() },
+            Friends: { id: req.id.toString(), Username: req.Username },
           },
         }
       : {
@@ -189,6 +203,29 @@ Router.put("/", UserAuthentication, async (req, res) => {
     // Update user who RECEIVED request
     await UserModel.findByIdAndUpdate(user._id, Filter2);
 
+    if (User.Request) {
+      await SessionModel.findOneAndUpdate(
+        { Username: req.User.Username },
+        {
+          $push: {
+            NewMessages: { Username: user.Username, Counter: 0 },
+          },
+        }
+      );
+      await SessionModel.findOneAndUpdate(
+        { Username: user.Username },
+        {
+          $push: {
+            NewMessages: { Username: req.User.Username, Counter: 0 },
+          },
+        }
+      );
+      const newConvo = new ConvoModel({
+        Users: [User.Username, req.Username],
+        Convo: [],
+      });
+      await newConvo.save();
+    }
     // Send response message
     res.status(200).json({
       message: User.Request ? Friend_Request_Accepted : Friend_Request_Rejected,
@@ -200,9 +237,9 @@ Router.put("/", UserAuthentication, async (req, res) => {
 });
 
 // DELETE Friendship
-Router.delete("/", UserAuthentication, async (req, res) => {
+Router.put("/delete", UserAuthentication, async (req, res) => {
   // Check if user has any friends
-  if (req.User.Friends <= 0)
+  if (req.User.Friends.length <= 0)
     return res.status(404).json({ message: Friend_Request_You, type: Error });
 
   // Destruct User from request body
@@ -223,6 +260,7 @@ Router.delete("/", UserAuthentication, async (req, res) => {
     // Check if the user exists based on username
     const user = await UserModel.findOne({ Username: User.Username })
       .select("_id")
+      .select("Username")
       .select("Friends");
     // Return error if user does not exist
     if (!user)
@@ -258,12 +296,142 @@ Router.delete("/", UserAuthentication, async (req, res) => {
         Friends: { id: req.id.toString() },
       },
     });
+
+    await SessionModel.findOneAndUpdate(
+      { Username: req.User.Username },
+      {
+        $pull: {
+          NewMessages: { Username: user.Username },
+        },
+      }
+    );
+    await SessionModel.findOneAndUpdate(
+      { Username: user.Username },
+      {
+        $pull: {
+          NewMessages: { Username: req.User.Username },
+        },
+      }
+    );
     res.status(200).json({ message: Friend_Removed, type: Success });
   } catch (error) {
     res.status(500).json({ message: error.message, type: Error });
   }
 });
 
+// search friends
+Router.post("/search", UserAuthentication, async (req, res) => {
+  const { Username } = req.body;
+  try {
+    const users = await UserModel.find({
+      Username: { $regex: Username, $options: "i" },
+    })
+      .select("Username")
+      .limit(10);
+    return res.status(200).json({ Users: users, type: Success });
+  } catch (error) {
+    return res.status(404).json({ message: User_Not_Found, type: Error });
+  }
+});
+
+// PUT Accept / Reject Friendship
+Router.put("/cancel", UserAuthentication, async (req, res) => {
+  // Check if user has any friends
+  if (req.User.Requested_Friends <= 0)
+    return res.status(404).json({ message: Friend_Request_You, type: Error });
+
+  // Destruct User from request body
+  const { User } = req.body;
+  // Validate syntax and check user object exists
+  const err = Validate(req.body, RequestSchema);
+  if (err.type === Error)
+    return res.status(err.code).json({ message: err.message, type: err.type });
+
+  // Convert username to lower case
+  User.Username = User.Username.toLowerCase();
+
+  // Check if the user exists based on username
+  const user = await UserModel.findOne({ Username: User.Username })
+    .select("_id")
+    .select("Requested_Friends");
+
+  // Return error if user does not exist
+  if (!user)
+    return res.status(404).json({ message: User_Not_Found, type: Error });
+
+  let IsUser2FoundFriend = false;
+  let IsUser1Request = false;
+
+  try {
+    // SENDER - ACCEPTING OR REJECTING
+    req.User.Requested_Friends.forEach((friend) => {
+      if (friend.id === user._id.toString() && friend.DidYouSend) {
+        IsUser2FoundFriend = true;
+        return;
+      }
+    });
+
+    // RECIPIENT
+    user.Requested_Friends.forEach((friend) => {
+      if (friend.id === req.id && !friend.DidYouSend) IsUser1Request = true;
+    });
+
+    // Return error message if match not found
+    if (!IsUser2FoundFriend || !IsUser1Request)
+      return res.status(404).json({ message: Friend_Request_You, type: Error });
+
+    // Filter Object
+    const Filter1 = User.Request
+      ? {
+          $pull: {
+            Requested_Friends: { id: user._id.toString(), DidYouSend: false },
+          },
+          $push: {
+            Friends: { id: user._id.toString(), Username: User.Username },
+          },
+        }
+      : {
+          $pull: {
+            Requested_Friends: { id: user._id.toString() },
+          },
+        };
+    const Filter2 = User.Request
+      ? {
+          $pull: {
+            Requested_Friends: { id: req.id.toString() },
+          },
+          $push: {
+            Friends: { id: req.id.toString(), Username: req.Username },
+          },
+        }
+      : {
+          $pull: {
+            Requested_Friends: { id: req.id.toString() },
+          },
+        };
+
+    // Update user who SENT request
+    await UserModel.findByIdAndUpdate(req.id, Filter1);
+    // Update user who RECEIVED request
+    await UserModel.findByIdAndUpdate(user._id, Filter2);
+
+    if (User.Request) {
+      const newConvo = new ConvoModel({
+        Users: [User.Username, req.Username],
+        Convo: [],
+      });
+      await newConvo.save();
+    }
+
+    // Send response message
+    res.status(200).json({
+      message: User.Request ? Friend_Request_Accepted : Friend_Request_Rejected,
+      type: Success,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message, type: Error });
+  }
+});
 // validate
 const Validate = (Body, Schema) => {
   // Receive User object from a user

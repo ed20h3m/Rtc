@@ -12,30 +12,30 @@ import { AuthState } from "./context/Auth/AuthState";
 // import components
 import Alert from "./Components/utils/Alert";
 import LoginPage from "./Components/Pages/LoginPage/LoginPage";
+import SignUpPag from "./Components/Pages/SignUpPage/SignUpPage";
 import MainPage from "./Components/Pages/MainPage/MainPage";
 import { ChatContext } from "./context/Chat/ChatState";
+import Overlay from "./Components/utils/Overlay";
 
 const App = () => {
-  const { SetShowChats, ShowChats, IsChatSelected, SetSelectChat } =
-    useContext(ChatContext);
+  const { SetShowChats, IsChatSelected } = useContext(ChatContext);
   const [width] = useWindowSize();
 
   useEffect(() => {
     if (width <= 700 && IsChatSelected) {
       SetShowChats(false);
     } else SetShowChats(true);
-    // console.log(width);
-    // if (width <= 700) SetShowChats(false);
-    // else SetShowChats(true);
   }, [width]);
 
-  const { Alerts } = useContext(AlertContext);
+  const { Alerts, ShowOverlay } = useContext(AlertContext);
   return (
     <Fragment>
+      {ShowOverlay && <Overlay />}
       <Alert Alerts={Alerts} />
       <AuthState>
         <Routes>
           <Route path="/" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPag />} />
           <Route path="/chats" element={<MainPage />} />
         </Routes>
       </AuthState>

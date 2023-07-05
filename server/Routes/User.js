@@ -35,7 +35,6 @@ Router.get("/", UserAuthentication, async (req, res) => {
     // Get user details from database
     const user = await UserModel.findById(req.id)
       .select("-Friends")
-      .select("-Requested_Friends")
       .select("-created_at")
       .select("-updatedAt")
       .select("-Password")

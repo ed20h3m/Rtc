@@ -23,6 +23,7 @@ const FriendShipSchema = Joi.object({
 const RequestSchema = Joi.object({
   Username: Joi.string().alphanum().min(3).max(16).required(),
   Request: Joi.boolean().required(),
+  Cancel: Joi.boolean(),
 });
 const UserLoginSchema = Joi.object({
   EmailUsername: [
@@ -37,5 +38,5 @@ module.exports = {
   UserLoginSchema,
   UserSchemaPassword,
   FriendShipSchema,
-  RequestSchema
+  RequestSchema,
 };

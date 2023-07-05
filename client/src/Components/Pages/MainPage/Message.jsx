@@ -1,54 +1,36 @@
 import React, { useState, useContext, useEffect } from "react";
 import { ChatContext } from "../../../context/Chat/ChatState";
 import { SocketContext } from "../../../context/Handler/EventHandler";
+import { AlertContext } from "../../../context/Alert/Alert";
 import CloseIcon from "@mui/icons-material/Close";
+import Loading from "../../utils/Loading";
+import Text from "./Text";
 import "./Message.scss";
 
 const Message = () => {
   const [state, setState] = useState("");
+  const { SelectedChat, SetSelectChat, ShowChats, SetShowChats } =
+    useContext(ChatContext);
+  const { sendMessage, ConnectedUsers } = useContext(SocketContext);
   const {
-    SelectedChat,
-    SetSelectChat,
-    IsChatSelected,
-    ShowChats,
-    SetShowChats,
-  } = useContext(ChatContext);
-  const { sendMessage } = useContext(SocketContext);
+    ShowChatSettings,
+    ToggleChatSettings,
+    MessagesLoading,
+    ToggleOverlay,
+  } = useContext(AlertContext);
 
   useEffect(() => {
     const messages = document.getElementsByClassName("messages")[0];
-    AddMessages(SelectedChat);
-    messages.scrollIntoView(false);
-  }, [SelectedChat]);
-
-  const AddMessages = (user) => {
-    const messages = document.getElementsByClassName("messages")[0];
-    messages.innerText = "";
-    for (let i = 0; i < user.messages.length; i++) {
-      const newMessage = document.createElement("div");
-      newMessage.classList.add("newMessage");
-      newMessage.classList.add(
-        user.messages[i].from === "self" ? "me" : "client"
-      );
-      const div = document.createElement("div");
-      div.innerHTML = user.messages[i].content;
-      newMessage.appendChild(div);
-      messages.appendChild(newMessage);
+    if (messages) {
+      messages.scrollIntoView(false);
     }
-  };
+  }, [SelectedChat.messages, ConnectedUsers]);
 
-  const AddNewMessage = () => {
+  useEffect(() => {}, [ConnectedUsers]);
+
+  const AddNewMessage = (e) => {
+    e.preventDefault();
     const messages = document.getElementsByClassName("messages")[0];
-    if (!state) return;
-    const newMessage = document.createElement("div");
-    newMessage.classList.add("newMessage");
-    newMessage.classList.add("me");
-    const div = document.createElement("div");
-    div.innerHTML = state;
-    newMessage.appendChild(div);
-    messages.appendChild(newMessage);
-    const messageBox = document.getElementById("message-box");
-    messageBox.value = "";
     sendMessage(state, SelectedChat);
     setState("");
     messages.scrollIntoView(false);
@@ -72,11 +54,18 @@ const Message = () => {
     }
     SetSelectChat(false);
   };
-
-  return (
+  const ShowSettings = () => {
+    ToggleChatSettings(!ShowChatSettings);
+    ToggleOverlay(true);
+  };
+  return MessagesLoading ? (
+    <div className="loading-con">
+      <Loading />
+    </div>
+  ) : (
     <div className="message">
       <header>
-        <div className="left">
+        <div className="left" onClick={ShowSettings}>
           <img
             src="https://cdn.dribbble.com/users/361185/screenshots/3803404/media/1d9cbaab0e2aacf008c6b6524662183a.png?compress=1&resize=400x300&vertical=top"
             alt=""
@@ -88,14 +77,24 @@ const Message = () => {
         </div>
       </header>
       <main className="mes">
-        <div className="messages"></div>
+        <div className="messages">
+          {SelectedChat.messages.length > 0 &&
+            SelectedChat.messages.map((mes, idx) => (
+              <Text text={mes} key={idx} />
+            ))}
+        </div>
       </main>
-      <footer>
-        <input className="left" id="message-box" onChange={onChange}></input>
+      <form>
+        <input
+          className="left"
+          id="message-box"
+          onChange={onChange}
+          value={state}
+        ></input>
         <div className="right">
           <button onClick={AddNewMessage}>Send</button>
         </div>
-      </footer>
+      </form>
     </div>
   );
 };

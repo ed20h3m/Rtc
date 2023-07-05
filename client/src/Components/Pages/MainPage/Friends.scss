@@ -1,0 +1,93 @@
+.friends {
+  background-color: #000;
+  padding: 1rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  // height: 100%;
+  .loading-con {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+  }
+  header {
+    margin-top: 2rem;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    input {
+      background-color: #fafafafa;
+      font-size: 1.5rem;
+      min-width: 500px;
+      padding: 10px;
+      outline: none;
+      border: none;
+      border-radius: 3px;
+    }
+  }
+  .main-con {
+    overflow-y: auto;
+    position: relative;
+    flex: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    main {
+      margin-top: 2rem;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 1rem;
+      justify-items: center;
+    }
+  }
+}
+@media (max-width: 2100px) {
+  .friends {
+    .main-con {
+      main {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  }
+}
+@media (max-width: 1700px) {
+  .friends {
+    .main-con {
+      main {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  }
+}
+@media (max-width: 1400px) {
+  .friends {
+    .main-con {
+      main {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  }
+}
+@media (max-width: 1080px) {
+  .friends {
+    .main-con {
+      main {
+        grid-template-columns: repeat(1, 1fr);
+      }
+    }
+  }
+}
+@media (max-width: 1200px) {
+  .friends {
+    header {
+      input {
+        min-width: 0;
+        width: 100%;
+      }
+    }
+  }
+}

@@ -11,7 +11,7 @@ import Loading from "../../utils/Loading";
 const Chats = () => {
   const { LogOut } = useContext(AuthContext);
   const { isLoading } = useContext(AlertContext);
-  const { ConnectedUsers } = useContext(SocketContext);
+  const { ConnectedUsers, Disconnect } = useContext(SocketContext);
   const { IsChatSelected, SelectedChat } = useContext(ChatContext);
 
   useEffect(() => {
@@ -28,11 +28,18 @@ const Chats = () => {
     }
     // eslint-disable-next-line
   }, []);
-  const onClick = () => LogOut();
+  const onClick = () => {
+    Disconnect();
+    LogOut();
+  };
 
   return (
     <div className="chats">
       <header>
+        <img
+          src="https://www.syracuse.com/resizer/LjTbKFiHmJSEJyboi68vnEYh40U=/1280x0/smart/cloudfront-us-east-1.images.arcpublishing.com/advancelocal/EAACMW43EZAVNDPNCAV26JZAFI.jpg"
+          alt=""
+        />
         <h1>Chats</h1>
         <PowerSettingsNewIcon className="log-out" onClick={onClick} />
       </header>

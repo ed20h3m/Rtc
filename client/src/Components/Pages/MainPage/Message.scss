@@ -16,6 +16,9 @@
     .left {
       display: flex;
       align-items: center;
+      &:hover {
+        cursor: pointer;
+      }
       h2 {
         margin-left: 10px;
       }
@@ -31,9 +34,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      // border: $border-dark;
       cursor: pointer;
-      z-index: 20;
+      // z-index: 20;
     }
     .bg {
       height: 40px;
@@ -58,25 +60,54 @@
       background-color: #333;
       flex-direction: column;
       width: 100%;
+      padding: 1rem;
       .newMessage {
-        margin-bottom: 10px;
-        padding: 10px;
-        display: flex;
-        align-items: center;
-        min-height: 50px;
+        min-width: 200px;
+        width: auto;
+        margin-top: 2rem;
+        padding: 20px;
+        text-align: start;
+        font-weight: 900;
+        color: #fff;
+        font-family: arial;
+        position: relative;
       }
       .client {
+        align-self: flex-start;
         background-color: #ccc;
-        color: #000;
+        color: #111;
       }
       .me {
-        text-align: end;
-        background-color: #111;
-        justify-content: flex-end;
+        align-self: flex-end;
+        background-color: #00bfb6;
+      }
+      .client::before {
+        content: "";
+        width: 0px;
+        height: 0px;
+        position: absolute;
+        border-left: 10px solid #ccc;
+        border-right: 10px solid transparent;
+        border-top: 10px solid #ccc;
+        border-bottom: 10px solid transparent;
+        left: 19px;
+        bottom: -19px;
+      }
+      .me::before {
+        content: "";
+        width: 0px;
+        height: 0px;
+        position: absolute;
+        border-left: 10px solid transparent;
+        border-right: 10px solid #00bfb6;
+        border-top: 10px solid #00bfb6;
+        border-bottom: 10px solid transparent;
+        right: 19px;
+        bottom: -19px;
       }
     }
   }
-  footer {
+  form {
     min-height: 70px;
     background-color: #222;
     display: flex;
@@ -109,6 +140,12 @@
       }
     }
   }
+}
+.loading-con {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 @media (max-width: 700px) {
   // .message {

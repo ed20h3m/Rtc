@@ -12,6 +12,7 @@ const Friend_Request_Already_Sent = "Friend Request Already Sent to this user";
 const Friend_Request_Accepted = "Friend Request Accepted";
 const Friend_Request_Rejected = "Friend Request Declined";
 const Friend_Removed = "Friend Removed";
+const Session_Not_Found = "Session Not Found";
 
 module.exports = {
   Insufficient_Information,
@@ -28,4 +29,5 @@ module.exports = {
   Friend_Request_Accepted,
   Friend_Request_Rejected,
   Friend_Removed,
+  Session_Not_Found,
 };

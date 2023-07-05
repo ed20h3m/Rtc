@@ -3,6 +3,7 @@ import {
   SELECT_CHAT,
   IS_CHAT_SELECTED,
   SHOW_CHATS,
+  SET_SEARCH,
 } from "../types";
 const AlertReducer = (state, action) => {
   switch (action.type) {
@@ -30,6 +31,12 @@ const AlertReducer = (state, action) => {
       return {
         ...state,
         ShowChats: action.payload,
+      };
+    }
+    case SET_SEARCH: {
+      return {
+        ...state,
+        SearchFriends: action.payload,
       };
     }
   }

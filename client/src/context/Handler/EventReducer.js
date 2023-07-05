@@ -3,6 +3,7 @@ import {
   ADD_CONNECTED_USER,
   REMOVE_CONNECTED_USER,
   SEND_MESSAGE,
+  ADD_USER,
 } from "../types";
 const EventReducer = (state, action) => {
   switch (action.type) {
@@ -14,18 +15,22 @@ const EventReducer = (state, action) => {
         ConnectedUsers: action.payload,
       };
     }
-    case ADD_CONNECTED_USER: {
+    case ADD_USER: {
       return {
         ...state,
         ConnectedUsers: [...state.ConnectedUsers, action.payload],
       };
     }
+    case ADD_CONNECTED_USER: {
+      return {
+        ...state,
+        ConnectedUsers: action.payload,
+      };
+    }
     case REMOVE_CONNECTED_USER: {
       return {
         ...state,
-        ConnectedUsers: state.ConnectedUsers.filter(
-          (user) => user.userID !== action.payload
-        ),
+        ConnectedUsers: action.payload,
       };
     }
     case SEND_MESSAGE: {
