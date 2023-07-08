@@ -20,9 +20,6 @@ export const SocketState = (props) => {
   };
   const { ToggleLoading, SetAlert } = useContext(AlertContext);
   const [state, dispatch] = useReducer(EventReducer, initialState);
-  // Import alert context
-  // const { SetAlert } = useContext(AlertContext);
-  // Create socket
 
   let copy = [];
 
@@ -32,6 +29,37 @@ export const SocketState = (props) => {
     socket.auth = { username };
     socket.connect();
   };
+
+  useEffect(() => {
+    socket.on("private message", ({ content, from }) => {
+      const user = document.getElementsByClassName("selected-name")[0];
+      const messages = document.getElementsByClassName("messages")[0];
+      let Copy = [...state.ConnectedUsers];
+      for (let i = 0; i < Copy.length; i++) {
+        if (Copy[i].userID === from.userID) {
+          Copy[i].messages.push({
+            from: from.username,
+            Message: content,
+          });
+          if (user) {
+            if (Copy[i].username !== user.innerText) {
+              Copy[i].newMessageCounter++;
+            }
+          } else {
+            Copy[i].newMessageCounter++;
+          }
+          break;
+        }
+      }
+      // SetUsers();
+      dispatch({ type: SET_CONNECTED_USERS, payload: Copy });
+      if (messages) messages.scrollIntoView(false);
+    });
+    return () => {
+      socket.off("private message");
+    };
+  }, [state.ConnectedUsers]);
+
   // register events and capture events
   const connect = async () => {
     socket.on("session", ({ sessionID, userID }) => {
@@ -85,31 +113,30 @@ export const SocketState = (props) => {
       SetAlert(`${user.username} Accepted Your Friend Request`);
       AddUser(user);
     });
-    socket.on("private message", ({ content, from }) => {
-      const user = document.getElementsByClassName("selected-name")[0];
-      const messages = document.getElementsByClassName("messages")[0];
-      console.log(copy);
-      let Copy = [...copy];
-      for (let i = 0; i < Copy.length; i++) {
-        if (Copy[i].userID === from.userID) {
-          Copy[i].messages.push({
-            from: from.username,
-            Message: content,
-          });
-          if (user) {
-            if (Copy[i].username !== user.innerText) {
-              Copy[i].newMessageCounter++;
-            }
-          } else {
-            Copy[i].newMessageCounter++;
-          }
-          break;
-        }
-      }
-      // SetUsers();
-      dispatch({ type: SET_CONNECTED_USERS, payload: Copy });
-      if (messages) messages.scrollIntoView(false);
-    });
+    //   const user = document.getElementsByClassName("selected-name")[0];
+    //   const messages = document.getElementsByClassName("messages")[0];
+    //   console.log(copy);
+    //   let Copy = [...copy];
+    //   for (let i = 0; i < Copy.length; i++) {
+    //     if (Copy[i].userID === from.userID) {
+    //       Copy[i].messages.push({
+    //         from: from.username,
+    //         Message: content,
+    //       });
+    //       if (user) {
+    //         if (Copy[i].username !== user.innerText) {
+    //           Copy[i].newMessageCounter++;
+    //         }
+    //       } else {
+    //         Copy[i].newMessageCounter++;
+    //       }
+    //       break;
+    //     }
+    //   }
+    //   // SetUsers();
+    //   dispatch({ type: SET_CONNECTED_USERS, payload: Copy });
+    //   if (messages) messages.scrollIntoView(false);
+    // });
   };
 
   // Used for sending messages
@@ -161,11 +188,6 @@ export const SocketState = (props) => {
         username: to.username,
       },
     });
-  };
-
-  const SetUsers = () => {
-    // console.log(copy);
-    // console.log(state.ConnectedUsers);
   };
 
   return (
