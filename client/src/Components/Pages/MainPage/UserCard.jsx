@@ -49,11 +49,11 @@ const UserCard = ({ Username, image = null, _id }) => {
   };
 
   const Remove = () => {
-    RemoveFriendSearch(Username);
+    RemoveFriendSearch();
     setisFriend(false);
     setRequested(false);
   };
-  
+
   useEffect(() => {
     ConnectedUsers.forEach((chat) => {
       if (chat.username === Username) setisFriend(true);

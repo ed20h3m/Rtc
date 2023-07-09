@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import { AlertContext } from "../Alert/Alert";
+import axios from "axios";
 import EventReducer from "./EventReducer";
 import {
   SET_CONNECTED_USERS,
@@ -21,8 +22,6 @@ export const SocketState = (props) => {
   const { ToggleLoading, SetAlert } = useContext(AlertContext);
   const [state, dispatch] = useReducer(EventReducer, initialState);
 
-  let copy = [];
-
   // Connect socket
   const ConnectSocket = async (username) => {
     // attach username
@@ -31,6 +30,35 @@ export const SocketState = (props) => {
   };
 
   useEffect(() => {
+    socket.on("user connected", (data) => {
+      let payload = {};
+      let found = false;
+      for (let i = 0; i < state.ConnectedUsers.length; i++) {
+        if (state.ConnectedUsers[i].username === data.username) {
+          found = true;
+          state.ConnectedUsers[i].connected = true;
+          payload = state.ConnectedUsers;
+          break;
+        }
+      }
+      if (!found) {
+        payload = [...state.ConnectedUsers, data];
+      }
+      dispatch({ type: ADD_CONNECTED_USER, payload });
+    });
+    socket.on("user disconnected", (id) => {
+      for (let i = 0; i < state.ConnectedUsers.length; i++) {
+        if (state.ConnectedUsers[i].userID === id) {
+          state.ConnectedUsers[i].connected = false;
+          dispatch({
+            type: REMOVE_CONNECTED_USER,
+            payload: state.ConnectedUsers,
+          });
+          break;
+        }
+      }
+      // copy = copy.filter((user) => user.userID !== id);
+    });
     socket.on("private message", ({ content, from }) => {
       const user = document.getElementsByClassName("selected-name")[0];
       const messages = document.getElementsByClassName("messages")[0];
@@ -56,12 +84,16 @@ export const SocketState = (props) => {
       if (messages) messages.scrollIntoView(false);
     });
     return () => {
+      socket.off("user connected");
+      socket.off("user disconnected");
       socket.off("private message");
+      // socket.off("friend removed");
     };
   }, [state.ConnectedUsers]);
 
   // register events and capture events
   const connect = async () => {
+    // Runs Once
     socket.on("session", ({ sessionID, userID }) => {
       // attach the session ID to the next reconnection attempts
       socket.auth = { sessionID };
@@ -72,71 +104,17 @@ export const SocketState = (props) => {
       // save the ID of the session
       socket.sessionID = sessionID;
     });
+    // Runs Once
     socket.on("users", async (data) => {
       ToggleLoading(true);
       dispatch({ type: SET_CONNECTED_USERS, payload: data });
-      copy = data;
       ToggleLoading(false);
     });
-    socket.on("user connected", (data) => {
-      // SetAlert("User Connected");
-      let payload = {};
-      let found = false;
-      for (let i = 0; i < copy.length; i++) {
-        // console.log(copy[i].username, data.username);
-        if (copy[i].username === data.username) {
-          found = true;
-          copy[i].connected = true;
-          payload = copy;
-          break;
-        }
-      }
-      if (!found) {
-        payload = [...state.ConnectedUsers, data];
-      }
-      dispatch({ type: ADD_CONNECTED_USER, payload });
-    });
-    socket.on("user disconnected", (id) => {
-      for (let i = 0; i < copy.length; i++) {
-        if (copy[i].userID === id) {
-          copy[i].connected = false;
-          dispatch({
-            type: REMOVE_CONNECTED_USER,
-            payload: copy,
-          });
-          break;
-        }
-      }
-      // copy = copy.filter((user) => user.userID !== id);
-    });
+    // Runs Once
     socket.on("friend request accepted", (user) => {
       SetAlert(`${user.username} Accepted Your Friend Request`);
       AddUser(user);
     });
-    //   const user = document.getElementsByClassName("selected-name")[0];
-    //   const messages = document.getElementsByClassName("messages")[0];
-    //   console.log(copy);
-    //   let Copy = [...copy];
-    //   for (let i = 0; i < Copy.length; i++) {
-    //     if (Copy[i].userID === from.userID) {
-    //       Copy[i].messages.push({
-    //         from: from.username,
-    //         Message: content,
-    //       });
-    //       if (user) {
-    //         if (Copy[i].username !== user.innerText) {
-    //           Copy[i].newMessageCounter++;
-    //         }
-    //       } else {
-    //         Copy[i].newMessageCounter++;
-    //       }
-    //       break;
-    //     }
-    //   }
-    //   // SetUsers();
-    //   dispatch({ type: SET_CONNECTED_USERS, payload: Copy });
-    //   if (messages) messages.scrollIntoView(false);
-    // });
   };
 
   // Used for sending messages
@@ -165,7 +143,6 @@ export const SocketState = (props) => {
   };
 
   const AddUser = (data) => {
-    copy = [...state.ConnectedUsers, data];
     dispatch({ type: ADD_USER, payload: data });
   };
 
@@ -173,11 +150,10 @@ export const SocketState = (props) => {
     const filteredItems = state.ConnectedUsers.filter(
       (user) => user.username !== username
     );
-    copy = filteredItems;
     dispatch({ type: SET_CONNECTED_USERS, payload: filteredItems });
   };
 
-  const NotifyFriendRequest = (to) => {
+  const NotifyFriendRequest = (to, IsAccept) => {
     socket.emit("friend request", {
       from: {
         userID: socket.userID,
@@ -187,6 +163,7 @@ export const SocketState = (props) => {
         userID: to.userID,
         username: to.username,
       },
+      IsAccept: IsAccept,
     });
   };
 

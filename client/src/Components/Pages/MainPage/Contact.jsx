@@ -16,8 +16,10 @@ const Contact = ({ contact, id }) => {
     const contact = document.getElementById(id);
     for (let i = 0; i < contact.parentElement.children.length; i++) {
       contact.parentElement.children[i].classList.remove("selected-contact");
-      if (contact.parentElement.children[i].style.backgroundColor !== "#222") {
-        contact.parentElement.children[i].style.backgroundColor = "#222";
+      if (
+        contact.parentElement.children[i].style.backgroundColor !== "#151515"
+      ) {
+        contact.parentElement.children[i].style.backgroundColor = "#151515";
       }
     }
     if (ShowChats) {

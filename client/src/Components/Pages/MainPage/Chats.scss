@@ -3,16 +3,16 @@
   min-width: 420px;
   width: 420px;
   height: 100%;
-  background-color: #222;
+  background-color: $secondary-color-light;
   position: relative;
-  border-right: $border-dark;
+  border-right: $border-light;
   header {
     height: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-    border-bottom: $border-dark;
+    border-bottom: $border-light;
     img {
       margin: 0 1rem;
       height: 70px;
@@ -33,11 +33,9 @@
       transition: 0.2s all;
     }
     h1 {
-      // margin-left: 2rem;
       flex: 5;
     }
     .log-out:hover {
-      // transform: scale(1.1);
       color: $color-red;
     }
   }

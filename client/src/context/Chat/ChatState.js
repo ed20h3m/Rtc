@@ -1,4 +1,4 @@
-import { createContext, useReducer, useContext } from "react";
+import { createContext, useReducer, useContext, useEffect } from "react";
 import axios from "axios";
 import { AlertContext } from "../Alert/Alert";
 import ChatReducer from "../Chat/ChatReducer";
@@ -12,6 +12,7 @@ import {
   SET_SEARCH,
 } from "../types";
 import { SocketContext } from "../Handler/EventHandler";
+import { socket } from "../Handler/Socket";
 
 // Create auth context
 export const ChatContext = createContext();
@@ -30,15 +31,53 @@ export const ChatState = (props) => {
   const {
     SetAlert,
     ToggleLoading,
+    ToggleOverlay,
     ToggleMessagesLoading,
     ToggleSettingsLoading,
     ToggleSearchLoading,
     ToggleReqLoading,
+    ToggleChatSettings,
   } = useContext(AlertContext);
 
-  const { AddUser, RemoveUser, NotifyFriendRequest } =
+  const { AddUser, RemoveUser, NotifyFriendRequest, ConnectedUsers } =
     useContext(SocketContext);
   // get all friends from database
+
+  useEffect(() => {
+    socket.on("friend removed", ({ username }) => {
+      RemoveUser(username);
+      SetAlert(`${username} Removed You`);
+      if (state.IsChatSelected) {
+        if (state.ShowChats) {
+          const chats = document.getElementById("chats-");
+          for (let i = 0; i < chats.children.length; i++) {
+            if (chats.children[i].style.backgroundColor !== "#151515") {
+              chats.children[i].style.backgroundColor = "#151515";
+            }
+            const contact = document.getElementsByClassName("chats")[0];
+            if (contact.style.display === "none")
+              contact.style.display = "block";
+          }
+          const selectedChat =
+            document.getElementsByClassName("selected-contact")[0];
+          if (selectedChat) selectedChat.classList.remove("selected-contact");
+        }
+        SetSelectChat(false);
+      }
+    });
+    socket.on("clear convo", ({ username }) => {
+      SetAlert(`${username} cleared your conversation`);
+      console.log(username);
+      if (state.SelectedChat.username === username) {
+        state.SelectedChat.messages = [];
+        dispatch({ type: SELECT_CHAT, payload: state.SelectedChat });
+      }
+    });
+    return () => {
+      socket.off("friend removed");
+    };
+    // eslint-disable-next-line
+  }, [ConnectedUsers]);
 
   const GetFriends = async () => {
     try {
@@ -109,19 +148,30 @@ export const ChatState = (props) => {
       SetAlert(response.data.message);
     }
     state.SelectedChat.messages = [];
+    socket.emit("notify clear convo", {
+      from: localStorage.getItem("username"),
+      to: {
+        username: state.SelectedChat.username,
+        userID: state.SelectedChat.userID,
+      },
+    });
     dispatch({ type: SELECT_CHAT, payload: state.SelectedChat });
     ToggleSettingsLoading(false);
+    ToggleChatSettings(false);
+    ToggleOverlay(false);
   };
   // Remove Friend in settings
   const RemoveFriendSettings = async () => {
     ToggleSettingsLoading(true);
     await RemoveFriend(state.SelectedChat.username);
     ToggleSettingsLoading(false);
+    ToggleChatSettings(false);
+    ToggleOverlay(false);
   };
   // Remove Friend in search
-  const RemoveFriendSearch = async (Username) => {
+  const RemoveFriendSearch = async () => {
     ToggleReqLoading(true);
-    await RemoveFriend(Username);
+    await RemoveFriend(state.SelectChat.username);
     ToggleReqLoading(false);
   };
   // Remove Friend
@@ -132,13 +182,13 @@ export const ChatState = (props) => {
       const res = await axios.put("/user/friends/delete", {
         User: { Username },
       });
-      // console.log(res.data.message);
       SetAlert(res.data.message);
     } catch ({ response }) {
       SetAlert(response.data.message);
     }
     SetSelectChat(false);
     RemoveUser(Username);
+    NotifyFriendRequest(state.SelectedChat, false);
   };
   // Search Friends
   const Search = async (username) => {
@@ -206,7 +256,7 @@ export const ChatState = (props) => {
       axios.defaults.headers.common["token"] = localStorage.token;
       const res = await axios.post("/sessions", { Username });
       AddUser(res.data.Session);
-      NotifyFriendRequest(res.data.Session);
+      NotifyFriendRequest(res.data.Session, true);
     } catch ({ response }) {
       SetAlert(response.data.message);
     }

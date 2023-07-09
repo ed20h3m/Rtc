@@ -28,7 +28,6 @@ const MainPage = () => {
       <div className="main-page">
         {ShowChats && <Chats />}
         {IsChatSelected ? <Message /> : <Friends />}
-        {/* {IsChatSelected && <Message />} */}
         {ShowChatSettings && <ChatSettings />}
       </div>
     </div>

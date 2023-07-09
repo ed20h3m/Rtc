@@ -122,15 +122,21 @@ io.on("connection", async (socket) => {
     }
   });
 
-  socket.on("friend request", async ({ from, to }) => {
+  socket.on("friend request", async ({ from, to, IsAccept }) => {
     const session = await SessionModel.findOne({ Username: from.username });
-    socket.to(to.userID).emit("friend request accepted", {
-      userID: session.UserID,
-      username: session.Username,
-      messages: [],
-      newMessageCounter: 0,
-      connected: session.Connected,
-    });
+    if (IsAccept) {
+      socket.to(to.userID).emit("friend request accepted", {
+        userID: session.UserID,
+        username: session.Username,
+        messages: [],
+        newMessageCounter: 0,
+        connected: session.Connected,
+      });
+    } else {
+      socket.to(to.userID).emit("friend removed", {
+        username: session.Username,
+      });
+    }
   });
 
   socket.on("disconnect", async () => {
@@ -173,24 +179,26 @@ io.on("connection", async (socket) => {
         content,
         from: { username: from, userID: socket.userID },
       });
-    } else {
-      let counter = -1;
-      for (let i = 0; i < session.NewMessages.length; i++) {
-        if (session.NewMessages[i].Username === from) {
-          counter = session.NewMessages[i].Counter;
-        }
-      }
-      counter = Number(counter) + 1;
-      await SessionModel.findOneAndUpdate(
-        {
-          Username: to.username,
-          NewMessages: { $elemMatch: { Username: from } },
-        },
-        { $set: { "NewMessages.$.Counter": counter } }
-      );
     }
+    let counter = -1;
+    for (let i = 0; i < session.NewMessages.length; i++) {
+      if (session.NewMessages[i].Username === from) {
+        counter = session.NewMessages[i].Counter;
+      }
+    }
+    counter = Number(counter) + 1;
+    await SessionModel.findOneAndUpdate(
+      {
+        Username: to.username,
+        NewMessages: { $elemMatch: { Username: from } },
+      },
+      { $set: { "NewMessages.$.Counter": counter } }
+    );
   });
-  // socket.emit("users", users);
+
+  socket.on("notify clear convo", ({ from, to }) => {
+    socket.to(to.userID).emit("clear convo", { username: from });
+  });
 });
 
 module.exports = { http, server };

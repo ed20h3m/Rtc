@@ -42,8 +42,8 @@ const Message = () => {
     if (ShowChats) {
       const chats = document.getElementById("chats-");
       for (let i = 0; i < chats.children.length; i++) {
-        if (chats.children[i].style.backgroundColor !== "#222") {
-          chats.children[i].style.backgroundColor = "#222";
+        if (chats.children[i].style.backgroundColor !== "#151515") {
+          chats.children[i].style.backgroundColor = "#151515";
         }
         const contact = document.getElementsByClassName("chats")[0];
         if (contact.style.display === "none") contact.style.display = "block";

@@ -2,15 +2,16 @@
 .user-card {
   height: 350px;
   width: 100%;
-  background-color: #fafafafa;
+  background-color: #222;
   border-radius: 3px;
-  color: #333;
+  color: $text-color;
+  box-shadow: $shadow-dark3;
   padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   .button {
-    color: #333;
+    // color: #333;
   }
   .btns {
     display: flex;
@@ -34,7 +35,8 @@
     object-fit: cover;
     border-radius: 50%;
     border: $border-dark-focus;
-    box-shadow: 5px 5px 20px #ccc, -5px -5px 20px #ccc;
+    // box-shadow: 5px 5px 20px #ccc, -5px -5px 20px #ccc;
+    box-shadow: $shadow-dark3;
   }
   h2 {
     margin: 15px;
