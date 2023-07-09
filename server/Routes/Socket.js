@@ -1,6 +1,6 @@
 const express = require("express");
 const server = express();
-const http = require("https").Server(server);
+const http = require("http").Server(server);
 const SessionModel = require("../Models/Session");
 const UserModel = require("../Models/User");
 const ConvoModel = require("../Models/Convo");
