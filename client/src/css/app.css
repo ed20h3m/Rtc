@@ -1,1 +1,15 @@
-/*# sourceMappingURL=app.css.map */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: #ccc;
+}
+
+body {
+  height: 100vh;
+  background-color: #222;
+}
+
+#root {
+  height: 100%;
+}/*# sourceMappingURL=App.css.map */
