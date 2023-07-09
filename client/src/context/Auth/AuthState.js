@@ -46,10 +46,14 @@ export const AuthState = (props) => {
         // redirect to chats page
         nav("/chats");
       }
-    } catch ({ response }) {
-      SetAlert(response.data.message);
+    } catch (error) {
+      SetAlert(error.message);
       // console.log(error);
     }
+    //  catch ({ response }) {
+    //   SetAlert(response.data.message);
+    //   // console.log(error);
+    // }
     ToggleLoading(false);
   };
   // get user details
