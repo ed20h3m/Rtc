@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import "./Chats.scss";
 import Contact from "./Contact";
+import { useNavigate } from "react-router-dom";
 import { ChatContext } from "../../../context/Chat/ChatState";
 import { AlertContext } from "../../../context/Alert/Alert";
 import { AuthContext } from "../../../context/Auth/AuthState";
@@ -32,6 +33,7 @@ const Chats = () => {
     Disconnect();
     LogOut();
   };
+  const nav = useNavigate();
 
   return (
     <div className="chats">
@@ -39,6 +41,7 @@ const Chats = () => {
         <img
           src="https://www.syracuse.com/resizer/LjTbKFiHmJSEJyboi68vnEYh40U=/1280x0/smart/cloudfront-us-east-1.images.arcpublishing.com/advancelocal/EAACMW43EZAVNDPNCAV26JZAFI.jpg"
           alt=""
+          onClick={() => nav("/friends")}
         />
         <h1>Chats</h1>
         <PowerSettingsNewIcon className="log-out" onClick={onClick} />

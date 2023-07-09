@@ -27,7 +27,7 @@ const MainPage = () => {
     <div className="container-fixed">
       <div className="main-page">
         {ShowChats && <Chats />}
-        {IsChatSelected ? <Message /> : <Friends />}
+        {IsChatSelected ? <Message /> : window.innerWidth >= 700 && <Friends />}
         {ShowChatSettings && <ChatSettings />}
       </div>
     </div>

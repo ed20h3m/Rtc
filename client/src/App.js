@@ -8,7 +8,6 @@ import {
   Fragment,
 } from "react";
 import { AlertContext } from "./context/Alert/Alert";
-import { AuthState } from "./context/Auth/AuthState";
 // import components
 import Alert from "./Components/utils/Alert";
 import LoginPage from "./Components/Pages/LoginPage/LoginPage";
@@ -16,6 +15,7 @@ import SignUpPag from "./Components/Pages/SignUpPage/SignUpPage";
 import MainPage from "./Components/Pages/MainPage/MainPage";
 import { ChatContext } from "./context/Chat/ChatState";
 import Overlay from "./Components/utils/Overlay";
+import SearchFriends from "./Components/Pages/SearchFriends";
 
 const App = () => {
   const { SetShowChats, IsChatSelected } = useContext(ChatContext);
@@ -32,13 +32,12 @@ const App = () => {
     <Fragment>
       {ShowOverlay && <Overlay />}
       <Alert Alerts={Alerts} />
-      <AuthState>
-        <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPag />} />
-          <Route path="/chats" element={<MainPage />} />
-        </Routes>
-      </AuthState>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUpPag />} />
+        <Route path="/chats" element={<MainPage />} />
+        <Route path="/friends" element={<SearchFriends />} />
+      </Routes>
     </Fragment>
   );
 };

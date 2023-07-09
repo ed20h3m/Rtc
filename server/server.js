@@ -1,8 +1,8 @@
 //Create express
-// const express = require("express");
-// const server = express();
 const { http, server } = require("./Routes/Socket");
 const cors = require("cors");
+const path = require("path");
+const express = require("express");
 server.use(cors());
 
 // Import Data-Base
@@ -37,5 +37,14 @@ server.use("/user/login", require("./Routes/UserLogin"));
 // Import Friendship methods
 server.use("/user/friends", require("./Routes/Friends"));
 
+// Set port number
+server.use(express.static(path.join(__dirname, "build")));
+
+// Set port number
+if (process.env.NODE_ENV === "production") {
+  server.get("/*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "build", "index.html"));
+  });
+}
 // Listen on given port
 http.listen(PORT, () => console.log("Server is Running ... " + PORT));
