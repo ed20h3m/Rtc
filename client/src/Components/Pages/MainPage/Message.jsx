@@ -9,7 +9,9 @@ import "./Message.scss";
 
 const Message = () => {
   const [state, setState] = useState("");
-  const { SelectedChat, SetSelectChat, ShowChats, SetShowChats } =
+  const [isTyping, setTyping] = useState(true);
+  const [timer, setTimer] = useState(null);
+  const { SelectedChat, SetSelectChat, ShowChats, SetShowChats, OnType } =
     useContext(ChatContext);
   const { sendMessage, ConnectedUsers } = useContext(SocketContext);
   const {
@@ -26,8 +28,6 @@ const Message = () => {
     }
   }, [SelectedChat.messages, ConnectedUsers]);
 
-  useEffect(() => {}, [ConnectedUsers]);
-
   const AddNewMessage = (e) => {
     e.preventDefault();
     const messages = document.getElementsByClassName("messages")[0];
@@ -35,7 +35,22 @@ const Message = () => {
     setState("");
     messages.scrollIntoView(false);
   };
-  const onChange = (e) => setState(e.target.value);
+
+  const onChange = (e) => {
+    if (isTyping) {
+      OnType(true);
+      setTyping(false);
+    }
+
+    clearTimeout(timer);
+    const newTimer = setTimeout(() => {
+      setTyping(true);
+      OnType(false);
+    }, 1000);
+    setTimer(newTimer);
+
+    setState(e.target.value);
+  };
 
   const cancel = () => {
     SetShowChats(true);
@@ -54,10 +69,12 @@ const Message = () => {
     }
     SetSelectChat(false);
   };
+
   const ShowSettings = () => {
     ToggleChatSettings(!ShowChatSettings);
     ToggleOverlay(true);
   };
+  
   return MessagesLoading ? (
     <div className="loading-con">
       <Loading />

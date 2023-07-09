@@ -67,7 +67,6 @@ export const ChatState = (props) => {
     });
     socket.on("clear convo", ({ username }) => {
       SetAlert(`${username} cleared your conversation`);
-      console.log(username);
       if (state.SelectedChat.username === username) {
         state.SelectedChat.messages = [];
         dispatch({ type: SELECT_CHAT, payload: state.SelectedChat });
@@ -75,6 +74,7 @@ export const ChatState = (props) => {
     });
     return () => {
       socket.off("friend removed");
+      socket.off("clear convo");
     };
     // eslint-disable-next-line
   }, [ConnectedUsers]);
@@ -262,6 +262,19 @@ export const ChatState = (props) => {
     }
   };
 
+  // Event Triggered when user types
+  const OnType = (typing) => {
+    // console.log(state.SelectedChat);
+    socket.emit("typing", {
+      from: localStorage.getItem("username"),
+      to: {
+        username: state.SelectedChat.username,
+        userID: state.SelectedChat.userID,
+      },
+      isTyping: typing,
+    });
+  };
+
   return (
     <ChatContext.Provider
       value={{
@@ -277,6 +290,7 @@ export const ChatState = (props) => {
         SendFriendRequest,
         CancelRequest,
         HandleRequest,
+        OnType,
         ShowChats: state.ShowChats,
         chats: state.chats,
         SelectedChat: state.SelectedChat,

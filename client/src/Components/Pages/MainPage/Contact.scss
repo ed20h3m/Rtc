@@ -14,6 +14,13 @@
     img {
       margin-right: 1rem;
     }
+    .align-row {
+      display: flex;
+      align-items: center;
+      p {
+        margin-left: 10px;
+      }
+    }
     .mid {
       display: flex;
       flex-direction: column;

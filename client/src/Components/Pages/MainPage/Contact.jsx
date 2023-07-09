@@ -28,6 +28,7 @@ const Contact = ({ contact, id }) => {
     }
     SelectChat(chat);
   };
+
   return (
     <div className="contact" id={id} onClick={() => Focus(id, contact)}>
       <div className="left">
@@ -38,7 +39,10 @@ const Contact = ({ contact, id }) => {
         <div className="mid">
           <h3>{contact.username}</h3>
           {contact.connected ? (
-            <div className="con"></div>
+            <span className="align-row">
+              <div className="con"></div>
+              {contact.isTyping && <p>typing ...</p>}
+            </span>
           ) : (
             <div className="dis"></div>
           )}

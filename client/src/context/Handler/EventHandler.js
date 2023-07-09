@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import { AlertContext } from "../Alert/Alert";
-import axios from "axios";
 import EventReducer from "./EventReducer";
 import {
   SET_CONNECTED_USERS,
@@ -83,11 +82,22 @@ export const SocketState = (props) => {
       dispatch({ type: SET_CONNECTED_USERS, payload: Copy });
       if (messages) messages.scrollIntoView(false);
     });
+    socket.on("user typing", ({ from, isTyping }) => {
+      state.ConnectedUsers.forEach((user) => {
+        if (user.username === from) {
+          user.isTyping = isTyping;
+        }
+      });
+      dispatch({
+        type: SET_CONNECTED_USERS,
+        payload: [...state.ConnectedUsers],
+      });
+    });
     return () => {
       socket.off("user connected");
       socket.off("user disconnected");
       socket.off("private message");
-      // socket.off("friend removed");
+      socket.off("user typing");
     };
   }, [state.ConnectedUsers]);
 
@@ -166,7 +176,6 @@ export const SocketState = (props) => {
       IsAccept: IsAccept,
     });
   };
-
   return (
     <SocketContext.Provider
       value={{

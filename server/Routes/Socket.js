@@ -99,6 +99,7 @@ io.on("connection", async (socket) => {
               connected: session.Connected,
               newMessageCounter: item.Counter,
               messages: [],
+              isTyping: false,
             });
           }
         });
@@ -198,6 +199,23 @@ io.on("connection", async (socket) => {
 
   socket.on("notify clear convo", ({ from, to }) => {
     socket.to(to.userID).emit("clear convo", { username: from });
+  });
+
+  socket.on("typing", async ({ from, to, isTyping }) => {
+    try {
+      const session = await SessionModel.findOne({
+        Username: to.username,
+      }).select("Connected");
+      // Check if user is connected
+      if (session.Connected) {
+        socket.to(to.userID).emit("user typing", {
+          from,
+          isTyping,
+        });
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
   });
 });
 
