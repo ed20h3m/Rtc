@@ -11,28 +11,16 @@ const Friends = () => {
   const { Search, SearchFriends } = useContext(ChatContext);
   const { SearchLoading } = useContext(AlertContext);
   const { GetUser } = useContext(AuthContext);
-  const [focus, setFocus] = useState(false);
   const [text, setText] = useState("");
   const onChange = (e) => {
     Search(e.target.value.trim());
     setText(e.target.value.trim());
     GetUser();
   };
-  const foc = () => {
-    setFocus(true);
-  };
-  const ab = () => {
-    setFocus(false);
-  };
   return (
     <div className="friends">
       <header>
-        <input
-          placeholder="Search For Friends"
-          onChange={onChange}
-          onFocus={foc}
-          onBlur={ab}
-        />
+        <input placeholder="Search For Friends" onChange={onChange} />
       </header>
       <div className="main-con">
         {SearchLoading ? (

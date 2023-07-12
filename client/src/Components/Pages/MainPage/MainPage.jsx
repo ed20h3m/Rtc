@@ -8,10 +8,12 @@ import ChatSettings from "../../utils/ChatSettings";
 import { AlertContext } from "../../../context/Alert/Alert";
 import Friends from "./Friends";
 import { AuthContext } from "../../../context/Auth/AuthState";
+import RequestList from "./RequestList";
 
 const MainPage = () => {
   const { IsChatSelected, ShowChats, GetFriends } = useContext(ChatContext);
   const { GetUser } = useContext(AuthContext);
+  const { ShowReqList } = useContext(AlertContext);
   const { ConnectSocket, connect } = useContext(SocketContext);
   const { ShowChatSettings } = useContext(AlertContext);
 
@@ -29,6 +31,7 @@ const MainPage = () => {
         {ShowChats && <Chats />}
         {IsChatSelected ? <Message /> : window.innerWidth >= 700 && <Friends />}
         {ShowChatSettings && <ChatSettings />}
+        {ShowReqList && <RequestList />}
       </div>
     </div>
   );

@@ -69,6 +69,7 @@ Router.post("/", UserAuthentication, async (req, res) => {
       Username: User.Username,
     })
       .select("_id")
+      .select("Username")
       .select("Requested_Friends");
 
     // if user does not exist: return error message
@@ -95,13 +96,23 @@ Router.post("/", UserAuthentication, async (req, res) => {
     // Update user who SENT request
     await UserModel.findByIdAndUpdate(req.id, {
       $push: {
-        Requested_Friends: { id: user._id.toString(), DidYouSend: true },
+        Requested_Friends: {
+          id: user._id.toString(),
+          Username: user.Username,
+          DidYouSend: true,
+        },
       },
     });
 
     // Update user who RECEIVED request
     await UserModel.findByIdAndUpdate(user._id, {
-      $push: { Requested_Friends: { id: req.id, DidYouSend: false } },
+      $push: {
+        Requested_Friends: {
+          id: req.id,
+          Username: req.Username,
+          DidYouSend: false,
+        },
+      },
     });
 
     // Send success response
@@ -119,7 +130,6 @@ Router.put("/", UserAuthentication, async (req, res) => {
 
   // Destruct User from request body
   const { User } = req.body;
-  // console.log(User);
   // Validate syntax and check user object exists
   const err = Validate(req.body, RequestSchema);
   if (err.type === Error)

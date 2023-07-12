@@ -37,7 +37,7 @@ const UserCard = ({ Username, image = null, _id }) => {
   };
 
   const Accept = () => {
-    HandleRequest({ User: { Username, Request: true } });
+    HandleRequest({ Username, Request: true });
     setisFriend(true);
     setRequested(false);
   };
@@ -49,7 +49,7 @@ const UserCard = ({ Username, image = null, _id }) => {
   };
 
   const Remove = () => {
-    RemoveFriendSearch();
+    RemoveFriendSearch(Username);
     setisFriend(false);
     setRequested(false);
   };
@@ -65,6 +65,7 @@ const UserCard = ({ Username, image = null, _id }) => {
         else setSent(false);
       }
     });
+    //eslint-disable-next-line
   }, []);
   return (
     <div className="user-card">

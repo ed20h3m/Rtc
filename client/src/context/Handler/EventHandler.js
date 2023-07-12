@@ -18,7 +18,7 @@ export const SocketState = (props) => {
   const initialState = {
     ConnectedUsers: [],
   };
-  const { ToggleLoading, SetAlert } = useContext(AlertContext);
+  const { ToggleLoading } = useContext(AlertContext);
   const [state, dispatch] = useReducer(EventReducer, initialState);
 
   // Connect socket
@@ -58,7 +58,7 @@ export const SocketState = (props) => {
       }
       // copy = copy.filter((user) => user.userID !== id);
     });
-    socket.on("private message", ({ content, from }) => {
+    socket.on("private message", ({ content, from, timeStamp }) => {
       const user = document.getElementsByClassName("selected-name")[0];
       const messages = document.getElementsByClassName("messages")[0];
       let Copy = [...state.ConnectedUsers];
@@ -67,6 +67,7 @@ export const SocketState = (props) => {
           Copy[i].messages.push({
             from: from.username,
             Message: content,
+            timeStamp: timeStamp,
           });
           if (user) {
             if (Copy[i].username !== user.innerText) {
@@ -121,10 +122,6 @@ export const SocketState = (props) => {
       ToggleLoading(false);
     });
     // Runs Once
-    socket.on("friend request accepted", (user) => {
-      SetAlert(`${user.username} Accepted Your Friend Request`);
-      AddUser(user);
-    });
   };
 
   // Used for sending messages
@@ -136,6 +133,7 @@ export const SocketState = (props) => {
           Message: content,
           from: localStorage.getItem("username"),
           to: user.username,
+          timeStamp: `${new Date().getHours()}:${new Date().getMinutes()}`,
         });
       }
     }
@@ -148,7 +146,6 @@ export const SocketState = (props) => {
   };
 
   const Disconnect = () => {
-    // socket.emit("disconnec");
     socket.disconnect();
   };
 

@@ -8,7 +8,6 @@ const ConvoModel = require("../Models/Convo");
 const io = require("socket.io")(http, {
   cors: {
     // origin: ["http://localhost:3000", "http://192.168.0.17:3000/"],
-
     origin: "*",
   },
 });
@@ -166,6 +165,7 @@ io.on("connection", async (socket) => {
       {
         $push: {
           Convo: {
+            timeStamp: `${new Date().getHours()}:${new Date().getMinutes()}`,
             from: username,
             to: to.username,
             Message: content,
@@ -180,6 +180,7 @@ io.on("connection", async (socket) => {
       socket.to(to.userID).emit("private message", {
         content,
         from: { username: from, userID: socket.userID },
+        timeStamp: `${new Date().getHours()}:${new Date().getMinutes()}`,
       });
     }
     let counter = -1;
@@ -217,6 +218,28 @@ io.on("connection", async (socket) => {
     } catch (error) {
       console.log(error.message);
     }
+  });
+
+  socket.on("on friend request", async ({ from, to, sending }) => {
+    try {
+      const session = await SessionModel.findOne({
+        Username: to.username,
+      }).select("Connected");
+      if (session.Connected) {
+        socket.to(to.userID).emit("friend request alert", {
+          from,
+          sending,
+        });
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  });
+
+  socket.on("friend request rej", ({ from, to }) => {
+    socket.to(to.userID).emit("friend request rejected", {
+      username: from.username,
+    });
   });
 });
 

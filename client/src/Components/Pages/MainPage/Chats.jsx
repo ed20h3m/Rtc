@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import "./Chats.scss";
 import Contact from "./Contact";
-import { useNavigate } from "react-router-dom";
 import { ChatContext } from "../../../context/Chat/ChatState";
 import { AlertContext } from "../../../context/Alert/Alert";
 import { AuthContext } from "../../../context/Auth/AuthState";
@@ -11,7 +10,8 @@ import Loading from "../../utils/Loading";
 
 const Chats = () => {
   const { LogOut } = useContext(AuthContext);
-  const { isLoading } = useContext(AlertContext);
+  const { isLoading, ToggleReqList, ShowReqList, ToggleOverlay } =
+    useContext(AlertContext);
   const { ConnectedUsers, Disconnect } = useContext(SocketContext);
   const { IsChatSelected, SelectedChat } = useContext(ChatContext);
 
@@ -33,7 +33,10 @@ const Chats = () => {
     Disconnect();
     LogOut();
   };
-  const nav = useNavigate();
+  const OnReqList = () => {
+    ToggleOverlay(!ShowReqList);
+    ToggleReqList(!ShowReqList);
+  };
 
   return (
     <div className="chats">
@@ -41,7 +44,7 @@ const Chats = () => {
         <img
           src="https://www.syracuse.com/resizer/LjTbKFiHmJSEJyboi68vnEYh40U=/1280x0/smart/cloudfront-us-east-1.images.arcpublishing.com/advancelocal/EAACMW43EZAVNDPNCAV26JZAFI.jpg"
           alt=""
-          onClick={() => nav("/friends")}
+          onClick={OnReqList}
         />
         <h1>Chats</h1>
         <PowerSettingsNewIcon className="log-out" onClick={onClick} />
@@ -56,15 +59,6 @@ const Chats = () => {
             <Contact contact={contact} id={idx} key={idx} />
           ))
         )}
-        {/* {isLoading ? (
-          <div className="center-loading">
-            <Loading />
-          </div>
-        ) : (
-          chats.map((contact, idx) => (
-            <Contact contact={contact} id={idx} key={idx} />
-          ))
-        )} */}
       </main>
     </div>
   );

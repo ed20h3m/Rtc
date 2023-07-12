@@ -1,0 +1,74 @@
+@import "../../../colours";
+.req-list {
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+  width: 500px;
+  position: absolute;
+  left: 50%;
+  top: 100px;
+  transform: translate(-50%, 0);
+  background-color: $primary-color-light;
+  padding: 10px 1rem;
+  color: #333;
+  z-index: 15;
+  header {
+    padding: 1rem;
+    text-align: center;
+    border-bottom: $border-dark;
+    .close {
+      position: absolute;
+      right: 1rem;
+      top: 23px;
+      cursor: pointer;
+      transition: 0.2s all;
+      width: 35px;
+      height: 35px;
+      &:hover {
+        color: $color-red;
+        transform: scale(1.2);
+      }
+    }
+  }
+
+  main {
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    overflow-y: auto;
+    flex: auto;
+    margin-top: 2rem;
+    .req-item {
+      button {
+        padding: 10px;
+        margin-right: 5px;
+        outline: none;
+        font-size: 1.1rem;
+        cursor: pointer;
+        border: 1px solid #b7b7b7;
+        border-radius: 3px;
+        transition: 0.2s all;
+        font-weight: 400;
+        &:hover {
+          background-color: darken($color: $primary-color-light, $amount: 5);
+        }
+      }
+      border-bottom: 1px solid #b7b7b7;
+      height: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      // padding: 10px;
+      div {
+        display: flex;
+        align-items: center;
+        .acc {
+          color: $color-light-blue;
+        }
+        .rej {
+          color: $color-red;
+        }
+      }
+    }
+  }
+}

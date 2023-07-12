@@ -46,6 +46,7 @@ const LoginPage = () => {
                   showFilter={true}
                 />
               </div>
+              <a href="/">Login</a>
               <Button event={submit} name="Sign Up" />
             </Fragment>
           )}

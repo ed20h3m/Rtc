@@ -15,7 +15,7 @@ Router.post("/", UserAuthentication, async (req, res) => {
       .select("-NewMessages")
       .select("-created_at")
       .select("-updatedAt")
-      .select("_id")
+      .select("-_id")
       .select("-__v");
     const sesh = {
       userID: Session.UserID,

@@ -65,12 +65,25 @@
         min-width: 200px;
         width: auto;
         margin-top: 2rem;
-        padding: 20px;
+        padding: 10px 15px;
         text-align: start;
         font-weight: 900;
         color: #fff;
         font-family: arial;
         position: relative;
+        div {
+          display: flex;
+          flex-direction: column;
+          // .top {
+          //   font-size: 1.4rem;
+          // }
+          .bottom {
+            color: #333;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+          }
+        }
       }
       .client {
         align-self: flex-start;

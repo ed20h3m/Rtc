@@ -34,6 +34,7 @@ const LoginPage = () => {
             />
           </div>
           <a href="/">Forgotten Password?</a>
+          <a href="/signup">Sign Up</a>
           <Button event={() => Login(state)} name="Log in" />
         </Card>
       </div>

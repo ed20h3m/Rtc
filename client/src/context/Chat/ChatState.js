@@ -169,16 +169,19 @@ export const ChatState = (props) => {
     ToggleOverlay(false);
   };
   // Remove Friend in search
-  const RemoveFriendSearch = async () => {
+  const RemoveFriendSearch = async (Username) => {
     ToggleReqLoading(true);
-    await RemoveFriend(state.SelectChat.username);
+    await RemoveFriend(Username);
     ToggleReqLoading(false);
   };
   // Remove Friend
   const RemoveFriend = async (Username) => {
+    let session;
     try {
       // set token to headers
       axios.defaults.headers.common["token"] = localStorage.token;
+      axios.defaults.headers.common["token"] = localStorage.token;
+      session = await axios.post("/sessions", { Username });
       const res = await axios.put("/user/friends/delete", {
         User: { Username },
       });
@@ -188,7 +191,7 @@ export const ChatState = (props) => {
     }
     SetSelectChat(false);
     RemoveUser(Username);
-    NotifyFriendRequest(state.SelectedChat, false);
+    NotifyFriendRequest(session.data.Session, false);
   };
   // Search Friends
   const Search = async (username) => {
@@ -214,6 +217,19 @@ export const ChatState = (props) => {
       const res = await axios.post("/user/friends", {
         User: { Username: username },
       });
+      const session = await axios.post("/sessions", { Username: username });
+      socket.emit("on friend request", {
+        from: {
+          userID: socket.userID,
+          username: localStorage.getItem("username"),
+          Id: localStorage.getItem("_id"),
+        },
+        to: {
+          userID: session.data.Session.userID,
+          username: session.data.Session.username,
+        },
+        sending: true,
+      });
       SetAlert(res.data.message);
     } catch ({ response }) {
       SetAlert(response.data.message);
@@ -228,6 +244,19 @@ export const ChatState = (props) => {
       const res = await axios.put("/user/friends/cancel", {
         User: { Username: username, Request: false, Cancel: true },
       });
+      const session = await axios.post("/sessions", { Username: username });
+      socket.emit("on friend request", {
+        from: {
+          userID: socket.userID,
+          username: localStorage.getItem("username"),
+          Id: localStorage.getItem("_id"),
+        },
+        to: {
+          userID: session.data.Session.userID,
+          username: session.data.Session.username,
+        },
+        sending: false,
+      });
       SetAlert(res.data.message);
     } catch ({ response }) {
       SetAlert(response.data.message);
@@ -239,15 +268,27 @@ export const ChatState = (props) => {
     try {
       ToggleReqLoading(true);
       axios.defaults.headers.common["token"] = localStorage.token;
-      const res = await axios.put("/user/friends", User);
+      const res = await axios.put("/user/friends", { User });
       SetAlert(res.data.message);
     } catch ({ response }) {
       // alerts user if error
       SetAlert(response.data.message);
     }
     ToggleReqLoading(false);
-    if (User.User.Request) {
-      await GetSession(User.User.Username);
+    if (User.Request) {
+      await GetSession(User.Username);
+    } else {
+      const res = await axios.post("/sessions", { Username: User.Username });
+      socket.emit("friend request rej", {
+        from: {
+          userID: socket.userID,
+          username: localStorage.getItem("username"),
+        },
+        to: {
+          userID: res.data.Session.userID,
+          username: res.data.Session.username,
+        },
+      });
     }
   };
   // Get user Session
@@ -261,7 +302,6 @@ export const ChatState = (props) => {
       SetAlert(response.data.message);
     }
   };
-
   // Event Triggered when user types
   const OnType = (typing) => {
     // console.log(state.SelectedChat);

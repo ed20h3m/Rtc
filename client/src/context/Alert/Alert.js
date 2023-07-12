@@ -10,6 +10,7 @@ import {
   TOGGLE_PROFILE,
   SET_SEARCH_LOADING,
   SET_REQ_LOADING,
+  TOGGLE_REQUEST_LIST,
 } from "../types";
 import { v4 as uuid } from "uuid";
 export const AlertContext = createContext();
@@ -81,6 +82,12 @@ const AlertReducer = (state, action) => {
         isSettingsLoading: action.payload,
       };
     }
+    case TOGGLE_REQUEST_LIST: {
+      return {
+        ...state,
+        ShowReqList: action.payload,
+      };
+    }
     case REMOVE_ALERT: {
       return {
         ...state,
@@ -102,6 +109,7 @@ export const AlertState = (props) => {
     ShowProfile: false,
     SearchLoading: false,
     RequestLoading: false,
+    ShowReqList: false,
   };
 
   // create a reducer and a state
@@ -156,6 +164,9 @@ export const AlertState = (props) => {
     if (!option) {
       ToggleChatSettings(false);
     }
+    if (state.ShowReqList) {
+      ToggleReqList(false);
+    }
   };
   const ToggleSearchLoading = (option) => {
     dispatch({
@@ -169,6 +180,9 @@ export const AlertState = (props) => {
       payload: option,
     });
   };
+  const ToggleReqList = (option) => {
+    dispatch({ type: TOGGLE_REQUEST_LIST, payload: option });
+  };
   return (
     <AlertContext.Provider
       value={{
@@ -181,6 +195,7 @@ export const AlertState = (props) => {
         ToggleProfile,
         ToggleSearchLoading,
         ToggleReqLoading,
+        ToggleReqList,
         Alerts: state.Alerts,
         isLoading: state.isLoading,
         MessagesLoading: state.MessagesLoading,
@@ -189,6 +204,7 @@ export const AlertState = (props) => {
         isSettingsLoading: state.isSettingsLoading,
         SearchLoading: state.SearchLoading,
         RequestLoading: state.RequestLoading,
+        ShowReqList: state.ShowReqList,
       }}
     >
       {props.children}

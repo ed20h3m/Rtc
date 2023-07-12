@@ -25,6 +25,7 @@ const App = () => {
     if (width <= 700 && IsChatSelected) {
       SetShowChats(false);
     } else SetShowChats(true);
+    //eslint-disable-next-line
   }, [width]);
 
   const { Alerts, ShowOverlay } = useContext(AlertContext);
