@@ -30,6 +30,7 @@ const Message = () => {
 
   const AddNewMessage = (e) => {
     e.preventDefault();
+    if (state === "") return;
     const messages = document.getElementsByClassName("messages")[0];
     sendMessage(state, SelectedChat);
     setState("");
@@ -74,7 +75,7 @@ const Message = () => {
     ToggleChatSettings(!ShowChatSettings);
     ToggleOverlay(true);
   };
-  
+
   return MessagesLoading ? (
     <div className="loading-con">
       <Loading />
