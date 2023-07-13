@@ -7,7 +7,6 @@ import Button from "../../utils/Button/Button";
 import { AuthContext } from "../../../context/Auth/AuthState";
 import Loading from "../../utils/Loading";
 import "../../utils/utils.scss";
-import "../LoginPage/LoginPage.scss";
 import { AlertContext } from "../../../context/Alert/Alert";
 
 const LoginPage = () => {

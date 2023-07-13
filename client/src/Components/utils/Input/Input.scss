@@ -3,19 +3,19 @@
   outline: none;
   padding: 10px;
   font-weight: 100 !important;
-  width: 80%;
+  width: 90%;
   color: $text-color;
   font-size: 1.2rem;
   font-family: inherit;
   font-weight: 100;
   background-color: transparent;
-  border: $border-dark;
+  border: $border-light;
   margin-top: 1rem;
   transition: all 0.2s;
   border-radius: 2px;
 }
 input:focus {
-  border: $border-dark-focus;
+  border: $border-dark;
 }
 .pass-con {
   position: relative;
@@ -24,8 +24,6 @@ input:focus {
     margin: 5px 0;
     span {
       .i {
-        // border-radius: 50%;
-        // background-color: #333;
         transition: all 0.3s;
       }
       display: flex;
@@ -40,8 +38,8 @@ input:focus {
 }
 .icon {
   position: absolute;
-  right: 12%;
-  bottom: 0.7rem;
+  right: 7%;
+  bottom: 0.5rem;
   color: $text-color;
   cursor: pointer;
 }

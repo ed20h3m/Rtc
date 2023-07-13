@@ -1,4 +1,38 @@
 @import "../../colours";
+$MaxWidthContainer: 1800px;
+$MinWidthContainer: 300px;
+
+// Root container: containing all elements
+.root-con {
+  height: 100%;
+  width: 100%;
+}
+// Container to restrict width overflow
+.max-width-con {
+  height: 100%;
+  width: 100%;
+  margin: auto;
+  max-width: $MaxWidthContainer;
+  min-width: $MinWidthContainer;
+}
+// Center content horizontally
+.center-con-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+// Center content vertically
+.center-con-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+// Full height and width
+.full-height-width {
+  height: 100%;
+  width: 100%;
+}
 
 .container {
   width: 100%;

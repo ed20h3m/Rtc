@@ -1,11 +1,11 @@
 @import "../../../colours";
 .profile-image {
   border-radius: 50%;
-  border: $border-dark;
-  height: 250px;
-  width: 250px;
+  border: $border-light;
+  height: 200px;
+  width: 200px;
   overflow: hidden;
-  box-shadow: $shadow-dark;
+  box-shadow: $shadow-dark3;
   margin: 1.5rem 0;
   img {
     object-fit: cover;
