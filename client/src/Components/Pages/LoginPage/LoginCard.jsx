@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../../../context/Auth/AuthState";
-import Card from "../../utils/Card/Card";
 import Input from "../../utils/Input/Input";
+import Card from "../../utils/Card/Card";
 import PasswordInput from "../../utils/Input/PasswordInput";
 import ProfileImage from "../../utils/ProfileImage/ProfileImage";
 import Button from "../../utils/Button/Button";

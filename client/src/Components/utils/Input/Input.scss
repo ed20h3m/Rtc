@@ -20,11 +20,13 @@ input:focus {
 .pass-con {
   position: relative;
   span {
-    width: 80%;
+    width: 90%;
     margin: 5px 0;
+
     span {
+      color: $dark-border-color;
       .i {
-        transition: all 0.3s;
+        transition: $trans;
       }
       display: flex;
       justify-items: center;

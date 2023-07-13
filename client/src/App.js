@@ -33,16 +33,23 @@ const App = () => {
   const { Alerts, ShowOverlay } = useContext(AlertContext);
   return (
     <Fragment>
-      {ShowOverlay && <Overlay />}
-      <Alert Alerts={Alerts} />
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/signup" element={<SignUpPag />} />
-        <Route path="/chats" element={<MainPage />} />
-        <Route path="/friends" element={<SearchFriends />} />
-        <Route path="/forgot-password" element={<ForgetPassword />} />
-        <Route path="/reset-password/:id/:token" element={<ResetPassword />} />
-      </Routes>
+      <div className="root-con">
+        <div className="max-width-con">
+          {ShowOverlay && <Overlay />}
+          <Alert Alerts={Alerts} />
+          <Routes>
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPag />} />
+            <Route path="/chats" element={<MainPage />} />
+            <Route path="/friends" element={<SearchFriends />} />
+            <Route path="/forgot-password" element={<ForgetPassword />} />
+            <Route
+              path="/reset-password/:id/:token"
+              element={<ResetPassword />}
+            />
+          </Routes>
+        </div>
+      </div>
     </Fragment>
   );
 };
