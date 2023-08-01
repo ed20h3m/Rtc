@@ -1,6 +1,4 @@
-// $primary-color-light: #888;
-// $secondary-color-light: #111;
-$primary-color-light: #eff1f3;
+$primary-color-light: #2727278b;
 $secondary-color-light: #151515;
 $text-color: #ccc;
 $primary-color-dark: #111;
@@ -12,13 +10,14 @@ $color-red: rgb(228, 64, 64);
 $color-green: rgb(42, 169, 73);
 $color-yellow: #fed766;
 $focus-color: #fff;
+
+$trans: 0.2s all;
 $border-yellow: 1px solid $color-yellow;
 $border-light: 1px solid #cccccc57;
+$border-dark: 1px solid $dark-border-color;
+$border-dark2: 1px solid $primary-color-dark;
+$border-dark-focus: 1px solid $text-color;
 
-$border-dark: 2px solid $dark-border-color;
-$border-dark2: 2px solid $primary-color-dark;
-$border-dark-focus: 2px solid $text-color;
-
-$shadow-dark: 5px 5px 20px #333, -5px -5px 20px #333;
-$shadow-dark2: 5px 5px 20px #000, -5px -5px 20px #000;
-$shadow-dark3: 4px 4px 15px #110, -4px -4px 15px #110;
+$shadow-dark: 5px 5px 10px #333, -5px -5px 10px #333;
+$shadow-dark2: 5px 5px 10px #222, -5px -5px 10px #222;
+$shadow-dark3: 4px 4px 10px #111, -4px -4px 10px #111;

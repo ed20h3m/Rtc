@@ -3,6 +3,7 @@
   height: 80px;
   width: 100%;
   border-bottom: $border-light;
+  // background-color: red;
   display: flex;
   padding: 0 1rem;
   align-items: center;
@@ -64,5 +65,17 @@
     border: $border-dark;
     outline: none;
     object-fit: cover;
+  }
+}
+@media (max-width: 700px) {
+  .contact {
+    height: 70px;
+    .left {
+      font-size: 13px;
+    }
+    img {
+      height: 45px;
+      width: 45px;
+    }
   }
 }

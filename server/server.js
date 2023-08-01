@@ -37,6 +37,9 @@ server.use("/user/login", require("./Routes/UserLogin"));
 // Import Friendship methods
 server.use("/user/friends", require("./Routes/Friends"));
 
+// Import Reset password
+server.use("/reset-password", require("./Routes/ResetPassword"));
+
 // Set port number
 server.use(express.static(path.join(__dirname, "build")));
 

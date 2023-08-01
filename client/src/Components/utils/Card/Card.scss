@@ -1,32 +1,41 @@
 @import "../../../colours";
 .card {
-  min-height: 600px;
-  min-width: 500px;
+  min-height: 500px;
+  min-width: 450px;
   height: auto;
-  border: $border-dark;
-  background-color: $secondary-color-dark;
+  border: $border-light;
+  border-radius: 3px;
+  background-color: $primary-color-light;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  box-shadow: $shadow-dark2;
+  box-shadow: $shadow-dark3;
   padding: 1rem 0;
-  margin-top: 7rem;
   h1 {
     text-align: center;
     width: 100%;
-    border-bottom: $border-dark;
+    font-weight: 100;
+    font-size: 1.7rem;
+    color: $dark-border-color;
+    border-bottom: $border-light;
     padding: 1rem 0;
   }
   a {
+    margin-top: 10px;
     color: $text-color;
-    text-decoration: underline;
-    margin: 5px 0;
+    text-decoration: none;
+    color: $secondary-color-dark;
+    transition: $trans;
+    &:hover {
+      color: $dark-border-color;
+      transform: scale(1.1);
+    }
   }
 }
 @media (max-width: 600px) {
   .card {
     min-width: 0;
     width: 96%;
-    margin-top: 0 !important;
+    margin-top: 2.5rem !important;
   }
 }

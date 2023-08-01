@@ -8,7 +8,11 @@ import { useNavigate } from "react-router-dom";
 import { SET_USER } from "../types";
 
 // import schemas
-import { UserLoginSchema, UserSchema } from "../Schemas/User";
+import {
+  UserLoginSchema,
+  UserSchema,
+  UserSchemaPassword,
+} from "../Schemas/User";
 import { socket } from "../Handler/Socket";
 import { SocketContext } from "../Handler/EventHandler";
 
@@ -144,6 +148,46 @@ export const AuthState = (props) => {
     state.user.Requested_Friends = [...filteredItems];
     dispatch({ type: SET_USER, payload: state.user });
   };
+
+  const ForgottenPassword = async (Email) => {
+    try {
+      ToggleLoading(true);
+      const res = await axios.post("/reset-password", { Email });
+      SetAlert(res.data.message);
+    } catch ({ response }) {
+      SetAlert(response.data.message);
+    }
+    ToggleLoading(false);
+  };
+
+  const ValidateToken = async ({ id, token }) => {
+    try {
+      const res = await axios.get(`/reset-password/${id}/${token}`);
+      if (!res.data) SetAlert("Link Expired");
+      return res.data;
+    } catch ({ response }) {
+      SetAlert(response.data.message);
+    }
+  };
+
+  const ResetPasswordFuc = async ({ id, token, Password }) => {
+    try {
+      ToggleLoading(true);
+      const { error } = UserSchemaPassword.validate({ Password });
+      if (error) return SetAlert(error.details[0].message.replace(/"/g, ""));
+      const res = await axios.post(`/reset-password/${id}/${token}`, {
+        Password,
+      });
+      setTimeout(() => {
+        nav("/");
+      }, 1500);
+      SetAlert(res.data.message);
+    } catch ({ response }) {
+      SetAlert(response.data.message);
+    }
+    ToggleLoading(false);
+  };
+  
   return (
     <AuthContext.Provider
       value={{
@@ -152,6 +196,9 @@ export const AuthState = (props) => {
         LogOut,
         SignUp,
         PopUser,
+        ForgottenPassword,
+        ValidateToken,
+        ResetPasswordFuc,
         user: state.user,
       }}
     >

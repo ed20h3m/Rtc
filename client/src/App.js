@@ -16,6 +16,8 @@ import MainPage from "./Components/Pages/MainPage/MainPage";
 import { ChatContext } from "./context/Chat/ChatState";
 import Overlay from "./Components/utils/Overlay";
 import SearchFriends from "./Components/Pages/SearchFriends";
+import ForgetPassword from "./Components/Pages/ForgetPassword/ForgetPassword";
+import ResetPassword from "./Components/Pages/ResetPassword/ResetPassword";
 
 const App = () => {
   const { SetShowChats, IsChatSelected } = useContext(ChatContext);
@@ -31,14 +33,23 @@ const App = () => {
   const { Alerts, ShowOverlay } = useContext(AlertContext);
   return (
     <Fragment>
-      {ShowOverlay && <Overlay />}
-      <Alert Alerts={Alerts} />
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/signup" element={<SignUpPag />} />
-        <Route path="/chats" element={<MainPage />} />
-        <Route path="/friends" element={<SearchFriends />} />
-      </Routes>
+      <div className="root-con">
+        <div className="max-width-con">
+          {ShowOverlay && <Overlay />}
+          <Alert Alerts={Alerts} />
+          <Routes>
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/signup" element={<SignUpPag />} />
+            <Route path="/chats" element={<MainPage />} />
+            <Route path="/friends" element={<SearchFriends />} />
+            <Route path="/forgot-password" element={<ForgetPassword />} />
+            <Route
+              path="/reset-password/:id/:token"
+              element={<ResetPassword />}
+            />
+          </Routes>
+        </div>
+      </div>
     </Fragment>
   );
 };

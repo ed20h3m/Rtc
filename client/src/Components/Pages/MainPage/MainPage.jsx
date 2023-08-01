@@ -9,6 +9,7 @@ import { AlertContext } from "../../../context/Alert/Alert";
 import Friends from "./Friends";
 import { AuthContext } from "../../../context/Auth/AuthState";
 import RequestList from "./RequestList";
+import ChatPanel from "./ChatPanel";
 
 const MainPage = () => {
   const { IsChatSelected, ShowChats, GetFriends } = useContext(ChatContext);
@@ -29,7 +30,11 @@ const MainPage = () => {
     <div className="container-fixed">
       <div className="main-page">
         {ShowChats && <Chats />}
-        {IsChatSelected ? <Message /> : window.innerWidth >= 700 && <Friends />}
+        {IsChatSelected ? (
+          <ChatPanel />
+        ) : (
+          window.innerWidth >= 700 && <Friends />
+        )}
         {ShowChatSettings && <ChatSettings />}
         {ShowReqList && <RequestList />}
       </div>
