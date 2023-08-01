@@ -181,6 +181,8 @@ export const AlertState = (props) => {
     });
   };
   const ToggleReqList = (option) => {
+    if (option) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "auto";
     dispatch({ type: TOGGLE_REQUEST_LIST, payload: option });
   };
   return (

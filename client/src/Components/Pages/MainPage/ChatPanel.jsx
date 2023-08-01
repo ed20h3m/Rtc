@@ -1,18 +1,48 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { ChatContext } from "../../../context/Chat/ChatState";
 import { SocketContext } from "../../../context/Handler/EventHandler";
 import { AlertContext } from "../../../context/Alert/Alert";
 import CloseIcon from "@mui/icons-material/Close";
-import Loading from "../../utils/Loading";
+import Input from "../../utils/Input/Input";
+import Button from "../../utils/Button/Button";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Text from "./Text";
-import "./Message.scss";
+import "./ChatPanel.scss";
+import Load from "../../utils/Load";
 
-const Message = () => {
+const ChatPanel = () => {
   const [state, setState] = useState("");
   const [isTyping, setTyping] = useState(true);
   const [timer, setTimer] = useState(null);
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+  const [ShowBtn, SetShowBtn] = useState(false);
+  const scrollContainerRef = useRef(null);
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      const divElement = document.querySelector(".messages");
+      const num = Number(
+        (
+          scrollContainerRef.current.scrollTop / divElement.offsetHeight
+        ).toFixed(2)
+      );
+      if (num <= 0.8) SetShowBtn(true);
+      else SetShowBtn(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowHeight(window.innerHeight);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   const { SelectedChat, SetSelectChat, ShowChats, SetShowChats, OnType } =
     useContext(ChatContext);
+
   const { sendMessage, ConnectedUsers } = useContext(SocketContext);
   const {
     ShowChatSettings,
@@ -21,15 +51,7 @@ const Message = () => {
     ToggleOverlay,
   } = useContext(AlertContext);
 
-  useEffect(() => {
-    // const messages = document.getElementsByClassName("messages")[0];
-    // if (messages) {
-    //   messages.scrollIntoView(false);
-    // }
-  }, [SelectedChat.messages, ConnectedUsers]);
-
   const AddNewMessage = (e) => {
-    e.preventDefault();
     if (state === "") return;
     const messages = document.getElementsByClassName("messages")[0];
     sendMessage(state, SelectedChat);
@@ -52,6 +74,20 @@ const Message = () => {
 
     setState(e.target.value);
   };
+
+  useEffect(() => {
+    if (!MessagesLoading) {
+      const divElement = document.getElementsByClassName("chat-content")[0];
+      if (divElement) {
+        divElement.addEventListener("scroll", handleScroll);
+      }
+    }
+  }, [MessagesLoading]);
+
+  useEffect(() => {
+    const mes = document.getElementsByClassName("messages")[0];
+    if (mes) mes.scrollIntoView(false);
+  }, [SelectedChat.messages, ConnectedUsers]);
 
   const cancel = () => {
     SetShowChats(true);
@@ -76,13 +112,18 @@ const Message = () => {
     ToggleOverlay(true);
   };
 
+  const scrollDown = () => {
+    const mes = document.getElementsByClassName("messages")[0];
+    if (mes) mes.scrollIntoView(false);
+  };
+
   return MessagesLoading ? (
     <div className="loading-con">
-      <Loading />
+      <Load />
     </div>
   ) : (
-    <div className="message">
-      <header>
+    <div className="chat-container" style={{ height: windowHeight }}>
+      <div className="header">
         <div className="left" onClick={ShowSettings}>
           <img
             src="https://cdn.dribbble.com/users/361185/screenshots/3803404/media/1d9cbaab0e2aacf008c6b6524662183a.png?compress=1&resize=400x300&vertical=top"
@@ -93,30 +134,37 @@ const Message = () => {
         <div className="right-header">
           <CloseIcon className="bg" onClick={cancel} />
         </div>
-      </header>
-      {/* <main className="mes">
+      </div>
+      <div
+        className="chat-content"
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+      >
         <div className="messages">
           {SelectedChat.messages.length > 0 &&
             SelectedChat.messages.map((mes, idx) => (
               <Text text={mes} key={idx} />
             ))}
         </div>
-      </main> */}
-      <footer>
-        <form>
-          <input
-            className="left"
+      </div>
+      {ShowBtn && (
+        <div className="arrow-up">
+          <KeyboardArrowDownIcon className="icon" onClick={scrollDown} />
+        </div>
+      )}
+      <div className="footer">
+        <form action="">
+          <Input
+            placeholder="Enter Message"
             id="message-box"
             onChange={onChange}
             value={state}
-          ></input>
-          <div className="right">
-            <button onClick={AddNewMessage}>Send</button>
-          </div>
+          />
+          <Button name="Send" event={AddNewMessage} />
         </form>
-      </footer>
+      </div>
     </div>
   );
 };
 
-export default Message;
+export default ChatPanel;

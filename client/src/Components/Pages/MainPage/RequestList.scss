@@ -9,8 +9,9 @@
   top: 100px;
   transform: translate(-50%, 0);
   background-color: $primary-color-light;
+  background-color: #333;
+  color: #ccc;
   padding: 10px 1rem;
-  color: #333;
   z-index: 15;
   header {
     padding: 1rem;
@@ -70,5 +71,13 @@
         }
       }
     }
+  }
+}
+@media screen and (max-width: 700px) {
+  .req-list {
+    position: fixed;
+    top: 10px;
+    height: 95%;
+    width: 98%;
   }
 }
